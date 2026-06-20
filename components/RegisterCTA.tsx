@@ -1,377 +1,298 @@
 "use client";
 
-import { ArrowRight, ShieldCheck, Trophy, Grid2X2 } from "lucide-react";
+import { ShieldCheck, Trophy, Users, Award } from "lucide-react";
 import RegisterForm from "@/components/RegisterForm";
 
-function ChessSeal() {
+const BRASS   = "#C9A227";
+const BRASS_L = "#E2C158";
+const BG      = "#1a2e18";
+const SQ_DARK = "#4A6741";
+const SQ_LIGHT= "#E8E0CC";
+
+/* ── Floating chess king ── */
+function ChessKing() {
   return (
-    <svg
-      viewBox="0 0 92 92"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="rc-seal"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 64 64" fill="none" className="rc-king" aria-hidden="true">
       <defs>
-        <linearGradient id="rc-gold" x1="16" y1="10" x2="72" y2="78" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#E2C158" />
-          <stop offset="55%" stopColor="#C9A227" />
+        <linearGradient id="cta-kg" x1="8" y1="4" x2="52" y2="60" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#E2C158" />
+          <stop offset="55%"  stopColor="#C9A227" />
           <stop offset="100%" stopColor="#8B6912" />
         </linearGradient>
+        <linearGradient id="cta-sh" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stopColor="rgba(255,255,255,0.35)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+        </linearGradient>
+        <filter id="cta-drop">
+          <feDropShadow dx="0" dy="4" stdDeviation="5" floodColor="rgba(0,0,0,0.5)" />
+        </filter>
       </defs>
-      <circle cx="46" cy="46" r="34" stroke="url(#rc-gold)" strokeWidth="4" />
-      <path
-        d="M46 24V38M40 30H52M39 40C39 38 53 38 53 40L55.5 49H36.5L39 40ZM35 49C31 49 28.5 51.6 28 55L26.5 62H65.5L64 55C63.5 51.6 61 49 57 49H35Z"
-        fill="url(#rc-gold)"
-      />
+      <g filter="url(#cta-drop)">
+        <rect x="29" y="3"  width="6"  height="16" rx="1.5" fill="url(#cta-kg)" />
+        <rect x="22" y="7"  width="20" height="6"  rx="1.5" fill="url(#cta-kg)" />
+        <path d="M24 19c0-1.5 16-1.5 16 0l4 18H20L24 19z" fill="url(#cta-kg)" opacity="0.9" />
+        <rect x="14" y="37" width="36" height="8"  rx="1.5" fill="url(#cta-kg)" />
+        <rect x="10" y="45" width="44" height="8"  rx="2.5" fill="url(#cta-kg)" />
+        <path d="M24 19c0-1.5 13-1.5 15 0l3.5 14H22L24 19z" fill="url(#cta-sh)" opacity="0.45" />
+      </g>
     </svg>
   );
 }
 
-function MiniFiles() {
+/* ── Mini 8-file strip ── */
+function FileStrip() {
   return (
-    <div className="rc-files" aria-hidden="true">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <span key={i} style={{ background: i % 2 === 0 ? "#E7C96A" : "#F7F1E3" }} />
+    <div className="flex gap-1.5" aria-hidden="true">
+      {["a","b","c","d","e","f","g","h"].map((f, i) => (
+        <div key={f} className="flex flex-col items-center gap-0.5">
+          <div
+            className="h-7 w-7 rounded-md flex items-center justify-center font-mono text-[9px] font-medium uppercase"
+            style={{
+              background: i % 2 === 0 ? SQ_DARK  : SQ_LIGHT,
+              color:      i % 2 === 0 ? SQ_LIGHT : SQ_DARK,
+            }}
+          >{f}</div>
+        </div>
       ))}
     </div>
   );
 }
 
+/* ── Trust chips ── */
+const CHIPS = [
+  { icon: ShieldCheck, label: "Certified arbiters" },
+  { icon: Trophy,      label: "Medals & trophies"  },
+  { icon: Users,       label: "Family seating"      },
+  { icon: Award,       label: "All 8 categories"    },
+];
+
 export default function RegisterCTA() {
   return (
     <>
       <style>{`
-        @keyframes rcFadeUp {
-          from {
-            opacity: 0;
-            transform: translateY(24px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+        @keyframes rc2-fadeUp {
+          from { opacity:0; transform:translateY(28px); }
+          to   { opacity:1; transform:translateY(0); }
+        }
+        @keyframes rc2-glow {
+          0%,100% { opacity:0.22; transform:scale(1);    }
+          50%     { opacity:0.42; transform:scale(1.06); }
+        }
+        @keyframes rc2-float {
+          0%,100% { transform:translateY(0)    rotate(-3deg); }
+          50%     { transform:translateY(-10px) rotate(2deg);  }
+        }
+        @keyframes rc2-shimmer {
+          0%   { background-position:-200% center; }
+          100% { background-position: 200% center; }
+        }
+        @keyframes rc2-borderFlow {
+          from { transform: translateX(-100%); }
+          to   { transform: translateX(100%);  }
         }
 
-        @keyframes rcGlow {
-          0%, 100% {
-            opacity: .26;
-            transform: scale(1);
-          }
-          50% {
-            opacity: .48;
-            transform: scale(1.04);
-          }
-        }
-
-        @keyframes rcFloat {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-7px);
-          }
-        }
-
-        @keyframes rcLine {
-          from {
-            transform: translateX(-14%);
-          }
-          to {
-            transform: translateX(14%);
-          }
-        }
-
-        .rc-section {
+        /* Section */
+        .rc2-section {
           position: relative;
           overflow: hidden;
-          background:
-            radial-gradient(circle at 18% 18%, rgba(212,175,55,0.10), transparent 24%),
-            radial-gradient(circle at 82% 22%, rgba(54,88,68,0.16), transparent 24%),
-            linear-gradient(160deg, #102016 0%, #173024 100%);
+          background: linear-gradient(160deg, #0e1f0d 0%, #172416 50%, #1a2e18 100%);
         }
-
-        .rc-section::before {
-          content: "";
-          position: absolute;
-          inset: 0;
+        .rc2-section::before {
+          content:"";
+          position:absolute; inset:0;
           background-image:
-            linear-gradient(45deg, rgba(247,241,227,0.028) 25%, transparent 25%),
-            linear-gradient(-45deg, rgba(247,241,227,0.028) 25%, transparent 25%),
-            linear-gradient(45deg, transparent 75%, rgba(247,241,227,0.028) 75%),
-            linear-gradient(-45deg, transparent 75%, rgba(247,241,227,0.028) 75%);
-          background-size: 64px 64px;
-          background-position: 0 0, 0 32px, 32px -32px, -32px 0;
-          opacity: .3;
-          pointer-events: none;
+            linear-gradient(45deg, rgba(244,238,223,0.025) 25%, transparent 25%),
+            linear-gradient(-45deg,rgba(244,238,223,0.025) 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, rgba(244,238,223,0.025) 75%),
+            linear-gradient(-45deg,transparent 75%, rgba(244,238,223,0.025) 75%);
+          background-size:64px 64px;
+          background-position:0 0, 0 32px, 32px -32px, -32px 0;
+          pointer-events:none;
         }
 
-        .rc-orb {
-          position: absolute;
-          border-radius: 999px;
-          filter: blur(80px);
-          pointer-events: none;
-          animation: rcGlow 8s ease-in-out infinite;
+        /* Orbs */
+        .rc2-orb {
+          position:absolute; border-radius:50%;
+          filter:blur(90px); pointer-events:none;
+          animation: rc2-glow 9s ease-in-out infinite;
         }
 
-        .rc-shell {
-          position: relative;
-          z-index: 1;
-          overflow: hidden;
-          border-radius: 24px;
-          border: 1px solid rgba(247,241,227,0.12);
-          background:
-            linear-gradient(180deg, rgba(247,241,227,0.08), rgba(247,241,227,0.04));
+        /* Left panel */
+        .rc2-left {
+          animation: rc2-fadeUp 0.8s 0.1s ease both;
+        }
+
+        /* King */
+        .rc-king {
+          width: clamp(56px, 10vw, 80px);
+          height: clamp(56px, 10vw, 80px);
+          animation: rc2-float 5s ease-in-out infinite;
+          filter: drop-shadow(0 12px 28px rgba(0,0,0,0.45)) drop-shadow(0 0 20px rgba(201,162,39,0.22));
+        }
+
+        /* Form card */
+        .rc2-form-card {
+          position:relative;
+          overflow:hidden;
+          border-radius:24px;
+          border:1px solid rgba(244,238,223,0.10);
+          background: linear-gradient(160deg, rgba(244,238,223,0.07) 0%, rgba(244,238,223,0.03) 100%);
+          backdrop-filter:blur(12px);
+          -webkit-backdrop-filter:blur(12px);
           box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.05),
-            0 24px 60px rgba(0,0,0,0.24);
-          backdrop-filter: blur(12px);
-          animation: rcFadeUp .85s cubic-bezier(0.16, 1, 0.3, 1) both;
+            inset 0 1px 0 rgba(255,255,255,0.06),
+            0 32px 64px rgba(0,0,0,0.28);
+          animation: rc2-fadeUp 0.9s 0.2s ease both;
+        }
+        /* Animated top border */
+        .rc2-form-card::before {
+          content:"";
+          position:absolute;
+          top:0; left:0; right:0;
+          height:1.5px;
+          background:linear-gradient(90deg, transparent, ${BRASS}, ${BRASS_L}, ${BRASS}, transparent);
+          background-size:200% auto;
+          animation: rc2-shimmer 4s linear infinite;
         }
 
-        .rc-shell::after {
-          content: "";
-          position: absolute;
-          inset: auto 0 0 0;
-          height: 1px;
-          background: linear-gradient(90deg, #D4AF37, transparent 72%);
-          opacity: .85;
-          animation: rcLine 4.5s ease-in-out infinite alternate;
+        /* Chip */
+        .rc2-chip {
+          display:inline-flex; align-items:center; gap:6px;
+          border-radius:100px;
+          padding:7px 14px;
+          border:0.5px solid rgba(244,238,223,0.10);
+          background:rgba(244,238,223,0.05);
+          font-family:var(--font-plex-mono,monospace);
+          font-size:9px;
+          letter-spacing:0.14em;
+          text-transform:uppercase;
+          color:rgba(244,238,223,0.52);
+          white-space:nowrap;
         }
 
-        .rc-seal {
-          width: clamp(62px, 12vw, 88px);
-          height: clamp(62px, 12vw, 88px);
-          animation: rcFloat 5s ease-in-out infinite;
-          filter:
-            drop-shadow(0 14px 28px rgba(0,0,0,0.34))
-            drop-shadow(0 0 24px rgba(212,175,55,0.20));
-          flex-shrink: 0;
+        /* Stat row */
+        .rc2-stat-row {
+          display:grid;
+          grid-template-columns:repeat(3,1fr);
+          gap:8px;
+        }
+        .rc2-stat {
+          border-radius:14px;
+          padding:12px 10px;
+          text-align:center;
+          border:0.5px solid rgba(244,238,223,0.08);
+          background:rgba(244,238,223,0.04);
         }
 
-        .rc-chip {
-          display: inline-flex;
-          align-items: center;
-          gap: .55rem;
-          border-radius: 999px;
-          padding: .62rem .9rem;
-          border: 1px solid rgba(247,241,227,0.10);
-          background: rgba(247,241,227,0.05);
-          font-family: var(--font-plex-mono), monospace;
-          font-size: 10px;
-          letter-spacing: .16em;
-          text-transform: uppercase;
-          color: rgba(247,241,227,0.58);
+        @media (max-width:768px) {
+          .rc2-form-card { border-radius:20px; }
+          .rc2-stat-row  { grid-template-columns:repeat(3,1fr); }
         }
-
-        .rc-files {
-          display: grid;
-          grid-template-columns: repeat(8, 1fr);
-          gap: 6px;
-          max-width: 180px;
-          width: 100%;
+        @media (max-width:480px) {
+          .rc2-form-card { border-radius:18px; }
         }
-
-        .rc-files span {
-          height: 10px;
-          border-radius: 999px;
-        }
-
-        .rc-primary {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: .7rem;
-          border-radius: 999px;
-          padding: 1rem 1.35rem;
-          background: linear-gradient(135deg, #E7C96A, #D4AF37);
-          color: #102016;
-          font-family: var(--font-plex-mono), monospace;
-          font-size: 10px;
-          letter-spacing: .18em;
-          text-transform: uppercase;
-          box-shadow: 0 14px 34px rgba(212,175,55,0.28);
-          transition: transform 220ms ease, box-shadow 220ms ease;
-        }
-
-        .rc-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 18px 40px rgba(212,175,55,0.34);
-        }
-
-        .rc-primary svg {
-          transition: transform 220ms ease;
-        }
-
-        .rc-primary:hover svg {
-          transform: translateX(4px);
-        }
-
-        .rc-side {
-          border-radius: 20px;
-          border: 1px solid rgba(247,241,227,0.14);
-          background:
-            linear-gradient(180deg, rgba(247,241,227,0.12), rgba(247,241,227,0.07));
-          box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.12),
-            0 14px 34px rgba(0,0,0,0.14);
-        }
-
-        @media (max-width: 1024px) {
-          .rc-shell {
-            border-radius: 28px;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .rc-section {
-            padding-left: 1rem;
-            padding-right: 1rem;
-            padding-top: 4.5rem;
-            padding-bottom: 4.5rem;
-          }
-
-          .rc-shell {
-            border-radius: 22px;
-          }
-
-          .rc-chip {
-            width: 100%;
-            justify-content: center;
-            font-size: 9px;
-            letter-spacing: .14em;
-          }
-
-          .rc-primary {
-            width: 100%;
-            min-height: 50px;
-            padding: .95rem 1.1rem;
-            font-size: 10px;
-          }
-
-          .rc-side {
-            border-radius: 18px;
-          }
-
-          .rc-mobile-stack {
-            gap: 1.25rem;
-          }
-
-          .rc-seal-row {
-            justify-content: flex-start;
-          }
-
-          .rc-heading {
-            font-size: clamp(2.5rem, 9vw, 3.6rem);
-            line-height: .98;
-          }
-
-          .rc-lead {
-            font-size: 0.97rem;
-            line-height: 1.7;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .rc-shell {
-            padding: 1rem;
-            border-radius: 20px;
-          }
-
-          .rc-heading {
-            font-size: clamp(2.2rem, 11vw, 3rem);
-          }
-
-          .rc-chip-wrap {
-            gap: .55rem;
-          }
-
-          .rc-chip {
-            padding: .7rem .8rem;
-          }
-
-          .rc-seal-row {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: .9rem;
-          }
-
-          .rc-files {
-            max-width: 100%;
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .rc-orb,
-          .rc-shell,
-          .rc-shell::after,
-          .rc-seal {
-            animation: none !important;
-          }
-
-          .rc-primary:hover,
-          .rc-primary:hover svg {
-            transform: none !important;
-          }
+        @media (prefers-reduced-motion:reduce) {
+          .rc2-orb,.rc-king,.rc2-form-card::before,
+          .rc2-left { animation:none!important; opacity:1!important; transform:none!important; }
         }
       `}</style>
 
-      <section id="register" className="rc-section px-6 py-24">
-        <div
-          className="rc-orb left-[-70px] top-[20px] h-[220px] w-[220px]"
-          style={{ background: "rgba(212,175,55,0.12)" }}
-          aria-hidden="true"
-        />
-        <div
-          className="rc-orb right-[-70px] bottom-[10px] h-[230px] w-[230px]"
-          style={{ background: "rgba(54,88,68,0.26)" }}
-          aria-hidden="true"
-        />
+      <section id="register" className="rc2-section px-4 py-16 sm:px-6 sm:py-24">
 
-        <div className="mx-auto max-w-6xl">
-          <div className="rc-shell grid gap-6 p-4 sm:p-7 sm:gap-8 sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div className="rc-mobile-stack">
+        {/* Orbs */}
+        <div className="rc2-orb h-[280px] w-[280px] -top-16 -left-20"
+          style={{ background:"rgba(201,162,39,0.10)" }} aria-hidden="true" />
+        <div className="rc2-orb h-[320px] w-[320px] -bottom-20 -right-16"
+          style={{ background:"rgba(74,103,65,0.22)" }} aria-hidden="true" />
+        <div className="rc2-orb h-[200px] w-[200px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{ background:"rgba(201,162,39,0.06)" }} aria-hidden="true" />
+
+        <div className="relative z-10 mx-auto max-w-6xl">
+          <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-10">
+
+            {/* ── Left: pitch ── */}
+            <div className="rc2-left flex flex-col gap-6">
+
+              {/* King + eyebrow */}
+              <div className="flex items-center gap-4">
+                <ChessKing />
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.22em]"
+                    style={{ color:"rgba(244,238,223,0.38)" }}>
+                    2026 Edition · Open Now
+                  </p>
+                  <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.18em]"
+                    style={{ color: BRASS }}>
+                    Spark64 · Raven Rows
+                  </p>
+                </div>
+              </div>
+
+              {/* Heading */}
               <div className="rule-mono">
-                <h2 className="rc-heading font-display text-5xl font-semibold leading-[1.02] text-[#F7F1E3] sm:text-6xl">
-                  Make your move.
+                <h2
+                  className="font-display font-semibold leading-[1.0]"
+                  style={{ fontSize:"clamp(38px,7vw,60px)", color:"#F4EEDF" }}
+                >
+                  Make your<br />
+                  <em className="not-italic" style={{
+                    background:`linear-gradient(135deg,${BRASS_L},${BRASS})`,
+                    WebkitBackgroundClip:"text",
+                    WebkitTextFillColor:"transparent",
+                    backgroundClip:"text",
+                  }}>move.</em>
                 </h2>
               </div>
 
-              <p className="rc-lead mt-4 max-w-md font-body text-base leading-relaxed text-[rgba(247,241,227,0.74)] sm:mt-5">
-                Registrations are open across all eight categories.
+              <p className="font-body text-base leading-relaxed"
+                style={{ color:"rgba(244,238,223,0.60)", maxWidth:"360px" }}>
+                Registrations are open across all eight categories — U6 through U20.
+                Secure your child&apos;s board before the field fills up.
               </p>
 
-              <div className="rc-chip-wrap mt-5 flex flex-wrap gap-2 sm:mt-6">
-                <span className="rc-chip">
-                  <Grid2X2 size={13} strokeWidth={1.9} />
-                  U6 to U20
-                </span>
-                <span className="rc-chip">
-                  <Trophy size={13} strokeWidth={1.9} />
-                  Medals & trophies
-                </span>
-                <span className="rc-chip">
-                  <ShieldCheck size={13} strokeWidth={1.9} />
-                  Premium event
-                </span>
+              {/* Stat row */}
+              <div className="rc2-stat-row">
+                {[
+                  { n:"8",   l:"Categories" },
+                  { n:"2",   l:"Days"       },
+                  { n:"64",  l:"Squares"    },
+                ].map(st => (
+                  <div key={st.l} className="rc2-stat">
+                    <p className="font-display text-2xl font-bold" style={{ color:BRASS }}>{st.n}</p>
+                    <p className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.14em]"
+                      style={{ color:"rgba(244,238,223,0.35)" }}>{st.l}</p>
+                  </div>
+                ))}
               </div>
 
-              <div className="mt-6 flex items-center gap-4 sm:mt-8">
-                <a href="#register-form" className="rc-primary">
-                  Register your champion
-                  <ArrowRight size={15} strokeWidth={2} />
-                </a>
+              {/* Trust chips */}
+              <div className="flex flex-wrap gap-2">
+                {CHIPS.map(({ icon:Icon, label }) => (
+                  <span key={label} className="rc2-chip">
+                    <Icon size={12} strokeWidth={1.8} />
+                    {label}
+                  </span>
+                ))}
               </div>
 
-              <div className="rc-seal-row mt-6 flex items-center gap-4 sm:mt-8">
-                <ChessSeal />
-                <MiniFiles />
-              </div>
+              {/* File strip */}
+              <FileStrip />
+
+              {/* Divider */}
+              <div className="h-px" style={{ background:"rgba(244,238,223,0.07)" }} />
+
+              {/* Bottom trust line */}
+              <p className="font-mono text-[9px] uppercase tracking-[0.16em]"
+                style={{ color:"rgba(244,238,223,0.25)" }}>
+                Certified arbiters · Medals & trophies · Venue announced soon
+              </p>
             </div>
 
-            <div id="register-form" className="rc-side p-3 sm:p-5 sm:p-6">
+            {/* ── Right: form card ── */}
+            <div className="rc2-form-card p-4 sm:p-6 lg:p-7">
               <RegisterForm />
             </div>
+
           </div>
         </div>
       </section>

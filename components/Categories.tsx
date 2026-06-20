@@ -146,7 +146,7 @@ export default function Categories() {
 
         .cat-age {
           font-family: var(--font-fraunces, serif);
-          font-size: 42px;
+          font-size: clamp(30px, 6vw, 42px);
           font-weight: 800;
           line-height: 1;
           color: #1F3D2E;
@@ -240,7 +240,7 @@ export default function Categories() {
           </div>
 
           {/* ── File coordinate bar ── */}
-          <div className="cat-heading mt-8 flex gap-1 overflow-x-auto pb-1" aria-hidden="true">
+          <div className="cat-heading mt-8 flex gap-1 overflow-x-auto pb-1 min-w-0" aria-hidden="true" style={{ scrollbarWidth: "none" }}>
             {CATEGORIES.map(({ file, age }) => (
               <div key={file} className="flex flex-1 min-w-[60px] flex-col items-center gap-0.5">
                 <div
@@ -259,8 +259,7 @@ export default function Categories() {
 
           {/* ── Category cards grid ── */}
           <div
-            className="cat-grid mt-6 grid gap-3"
-            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))" }}
+            className="cat-grid mt-6 grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
           >
             {CATEGORIES.map((cat, idx) => {
               const PieceIcon = PIECE_COMPONENTS[idx];

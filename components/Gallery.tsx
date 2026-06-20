@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Image as ImageIcon, ChevronRight, Volume2, Maximize2 } from "lucide-react";
+import { Play, Image as ImageIcon, ChevronRight } from "lucide-react";
 
 type PhotoItem = {
   type: "photo";
@@ -76,12 +76,54 @@ export default function Gallery() {
   const [tab, setTab] = useState<TabType>("photos");
   const items = useMemo(() => (tab === "photos" ? PHOTOS : VIDEOS), [tab]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
+  const thumbsRef = useRef<HTMLDivElement | null>(null);
 
   const activeItem = items[activeIndex] ?? items[0];
 
   const switchTab = (nextTab: TabType) => {
     setTab(nextTab);
     setActiveIndex(0);
+    setPaused(false);
+    setImageFailed(false);
+  };
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [activeIndex, tab]);
+
+  useEffect(() => {
+    if (paused || items.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % items.length);
+    }, tab === "photos" ? 3200 : 5200);
+
+    return () => clearInterval(interval);
+  }, [items, paused, tab]);
+
+  useEffect(() => {
+    const container = thumbsRef.current;
+    if (!container) return;
+
+    const activeThumb = container.querySelector(
+      `[data-thumb-index="${activeIndex}"]`
+    ) as HTMLElement | null;
+
+    if (activeThumb) {
+      activeThumb.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  }, [activeIndex, tab]);
+
+  const handleThumbClick = (index: number) => {
+    setActiveIndex(index);
+    setPaused(true);
+    setImageFailed(false);
   };
 
   return (
@@ -176,8 +218,8 @@ export default function Gallery() {
         .gallery-main video {
           width: 100%;
           height: 100%;
-          background: #050b09;
           display: block;
+          background: #050b09;
         }
 
         .gallery-main img {
@@ -187,6 +229,20 @@ export default function Gallery() {
 
         .gallery-main video {
           object-fit: contain;
+        }
+
+        .gallery-main-empty {
+          display: flex;
+          height: 100%;
+          width: 100%;
+          align-items: center;
+          justify-content: center;
+          background:
+            radial-gradient(circle at center, rgba(212,175,55,0.08), transparent 35%),
+            #050b09;
+          color: rgba(247,241,227,0.78);
+          text-align: center;
+          padding: 2rem;
         }
 
         .gallery-main-overlay {
@@ -199,12 +255,16 @@ export default function Gallery() {
           justify-content: space-between;
           gap: 1rem;
           padding: 1.15rem 1.15rem 1rem;
-          background: linear-gradient(180deg, transparent 0%, rgba(8,10,10,0.78) 100%);
+          background: linear-gradient(180deg, transparent 0%, rgba(8,10,10,0.82) 100%);
           pointer-events: none;
         }
 
         .gallery-main-overlay.is-video {
-          padding-bottom: 3.2rem;
+          padding-bottom: 4.9rem;
+        }
+
+        .gallery-main-copy {
+          max-width: min(560px, 82%);
         }
 
         .gallery-main-title {
@@ -214,8 +274,8 @@ export default function Gallery() {
         }
 
         .gallery-main-meta {
-          margin-top: .35rem;
-          color: rgba(247,241,227,0.62);
+          margin-top: .4rem;
+          color: rgba(247,241,227,0.64);
         }
 
         .gallery-type-badge {
@@ -232,30 +292,7 @@ export default function Gallery() {
           letter-spacing: .16em;
           text-transform: uppercase;
           white-space: nowrap;
-        }
-
-        .gallery-video-utility {
-          position: absolute;
-          right: 1rem;
-          bottom: 1rem;
-          display: flex;
-          align-items: center;
-          gap: .65rem;
-          z-index: 2;
-          pointer-events: none;
-        }
-
-        .gallery-video-icon {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 28px;
-          height: 28px;
-          border-radius: 999px;
-          background: rgba(10,14,12,0.54);
-          border: 1px solid rgba(247,241,227,0.12);
-          color: #f7f1e3;
-          backdrop-filter: blur(8px);
+          flex-shrink: 0;
         }
 
         .gallery-thumbs {
@@ -297,8 +334,7 @@ export default function Gallery() {
           border-color: rgba(212,175,55,0.35);
         }
 
-        .gallery-thumb img,
-        .gallery-thumb video {
+        .gallery-thumb img {
           width: 100%;
           height: 100%;
           object-fit: cover;
@@ -328,9 +364,42 @@ export default function Gallery() {
           font-size: 10px;
           letter-spacing: .18em;
           text-transform: uppercase;
+          flex-wrap: wrap;
+        }
+
+        .gallery-toggle {
+          margin-top: .9rem;
+          display: inline-flex;
+          align-items: center;
+          gap: .65rem;
+          border-radius: 999px;
+          padding: .8rem 1rem;
+          border: 1px solid rgba(31,61,46,0.1);
+          background: rgba(255,255,255,0.5);
+          color: #1f3d2e;
+          font-family: var(--font-plex-mono), monospace;
+          font-size: 10px;
+          letter-spacing: .16em;
+          text-transform: uppercase;
+          transition: transform 220ms ease, border-color 220ms ease;
+        }
+
+        .gallery-toggle:hover {
+          transform: translateY(-1px);
+          border-color: rgba(212,175,55,0.35);
         }
 
         @media (max-width: 768px) {
+          .gallery-section {
+            padding-left: 1rem;
+            padding-right: 1rem;
+          }
+
+          .gallery-frame {
+            margin-top: 2rem;
+            border-radius: 22px;
+          }
+
           .gallery-main {
             aspect-ratio: 4 / 5;
           }
@@ -338,16 +407,70 @@ export default function Gallery() {
           .gallery-main-overlay {
             flex-direction: column;
             align-items: flex-start;
-            gap: .75rem;
+            justify-content: flex-end;
+            gap: .7rem;
+            padding: 1rem .95rem .95rem;
           }
 
           .gallery-main-overlay.is-video {
-            padding-bottom: 3.8rem;
+            padding-bottom: 5.2rem;
+          }
+
+          .gallery-main-copy {
+            max-width: 100%;
+          }
+
+          .gallery-main-title {
+            font-size: 1.85rem;
+          }
+
+          .gallery-type-badge {
+            font-size: 9px;
+            letter-spacing: .14em;
+            padding: .45rem .7rem;
+          }
+
+          .gallery-thumbs {
+            gap: .7rem;
+            padding: .85rem;
           }
 
           .gallery-thumb {
             flex: 0 0 92px;
             height: 76px;
+            border-radius: 14px;
+          }
+
+          .gallery-tip {
+            display: inline-flex;
+            font-size: 9px;
+            line-height: 1.6;
+          }
+
+          .gallery-toggle {
+            width: 100%;
+            justify-content: center;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .gallery-main {
+            aspect-ratio: 1 / 1.18;
+          }
+
+          .gallery-main-title {
+            font-size: 1.6rem;
+          }
+
+          .gallery-main-overlay.is-video {
+            padding-bottom: 5.5rem;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .gallery-thumb:hover,
+          .gallery-toggle:hover {
+            transform: none !important;
           }
         }
       `}</style>
@@ -387,6 +510,8 @@ export default function Gallery() {
                   Videos
                 </button>
               </div>
+
+            
             </div>
           </div>
 
@@ -401,24 +526,31 @@ export default function Gallery() {
                 className={`gallery-main ${activeItem?.type === "video" ? "is-video" : ""}`}
               >
                 {activeItem?.type === "photo" ? (
-                  <img src={activeItem.src} alt={activeItem.title} />
-                ) : (
-                  <>
-                    <video
-                      src={activeItem?.src}
-                      poster={activeItem?.poster}
-                      controls
-                      playsInline
-                    />
-                    <div className="gallery-video-utility" aria-hidden="true">
-                      <span className="gallery-video-icon">
-                        <Volume2 size={14} />
-                      </span>
-                      <span className="gallery-video-icon">
-                        <Maximize2 size={14} />
-                      </span>
+                  imageFailed ? (
+                    <div className="gallery-main-empty">
+                      <div>
+                        <p className="font-display text-2xl">Image not found</p>
+                        <p className="mt-2 font-body text-sm text-ivory/60">
+                          Check the file path inside <code>/public/gallery</code>.
+                        </p>
+                      </div>
                     </div>
-                  </>
+                  ) : (
+                    <img
+                      src={activeItem.src}
+                      alt={activeItem.title}
+                      onError={() => setImageFailed(true)}
+                    />
+                  )
+                ) : (
+                  <video
+                    src={activeItem?.src}
+                    poster={activeItem?.poster}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    onPlay={() => setPaused(true)}
+                  />
                 )}
 
                 <div
@@ -426,7 +558,7 @@ export default function Gallery() {
                     activeItem?.type === "video" ? "is-video" : ""
                   }`}
                 >
-                  <div>
+                  <div className="gallery-main-copy">
                     <p className="gallery-main-title font-display text-2xl sm:text-3xl">
                       {activeItem?.title}
                     </p>
@@ -452,17 +584,29 @@ export default function Gallery() {
               </motion.div>
             </AnimatePresence>
 
-            <div className="gallery-thumbs">
+            <div
+              className="gallery-thumbs"
+              ref={thumbsRef}
+              onMouseEnter={() => setPaused(true)}
+              onMouseLeave={() => setPaused(false)}
+            >
               {items.map((item, index) => (
                 <button
                   key={`${item.title}-${index}`}
                   type="button"
-                  onClick={() => setActiveIndex(index)}
+                  onClick={() => handleThumbClick(index)}
                   className={`gallery-thumb ${activeIndex === index ? "active" : ""}`}
                   aria-label={`Show ${item.title}`}
+                  data-thumb-index={index}
                 >
                   {item.type === "photo" ? (
-                    <img src={item.thumb || item.src} alt={item.title} />
+                    <img
+                      src={item.thumb || item.src}
+                      alt={item.title}
+                      onError={(e) => {
+                        e.currentTarget.style.opacity = "0.35";
+                      }}
+                    />
                   ) : (
                     <>
                       <img src={item.poster} alt={item.title} />
@@ -479,7 +623,6 @@ export default function Gallery() {
           <p className="gallery-tip">
             Swipe thumbnails
             <ChevronRight size={14} />
-            Add more photos and videos anytime
           </p>
         </div>
       </section>

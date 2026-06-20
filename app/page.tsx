@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -11,6 +14,13 @@ import RegisterCTA from "@/components/RegisterCTA";
 import Footer from "@/components/Footer";
 
 export default function Home() {
+  useEffect(() => {
+    if (window.location.hash) {
+      history.replaceState(null, "", window.location.pathname);
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, []);
+
   return (
     <main className="min-h-screen bg-ivory">
       <Navbar />

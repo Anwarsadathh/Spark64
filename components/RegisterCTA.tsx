@@ -118,7 +118,7 @@ export default function RegisterCTA() {
           position: relative;
           z-index: 1;
           overflow: hidden;
-          border-radius: 34px;
+          border-radius: 24px;
           border: 1px solid rgba(247,241,227,0.12);
           background:
             linear-gradient(180deg, rgba(247,241,227,0.08), rgba(247,241,227,0.04));
@@ -140,12 +140,13 @@ export default function RegisterCTA() {
         }
 
         .rc-seal {
-          width: 88px;
-          height: 88px;
+          width: clamp(62px, 12vw, 88px);
+          height: clamp(62px, 12vw, 88px);
           animation: rcFloat 5s ease-in-out infinite;
           filter:
             drop-shadow(0 14px 28px rgba(0,0,0,0.34))
             drop-shadow(0 0 24px rgba(212,175,55,0.20));
+          flex-shrink: 0;
         }
 
         .rc-chip {
@@ -153,12 +154,12 @@ export default function RegisterCTA() {
           align-items: center;
           gap: .55rem;
           border-radius: 999px;
-          padding: .55rem .9rem;
+          padding: .62rem .9rem;
           border: 1px solid rgba(247,241,227,0.10);
           background: rgba(247,241,227,0.05);
           font-family: var(--font-plex-mono), monospace;
           font-size: 10px;
-          letter-spacing: .18em;
+          letter-spacing: .16em;
           text-transform: uppercase;
           color: rgba(247,241,227,0.58);
         }
@@ -168,6 +169,7 @@ export default function RegisterCTA() {
           grid-template-columns: repeat(8, 1fr);
           gap: 6px;
           max-width: 180px;
+          width: 100%;
         }
 
         .rc-files span {
@@ -206,13 +208,97 @@ export default function RegisterCTA() {
         }
 
         .rc-side {
-          border-radius: 26px;
+          border-radius: 20px;
           border: 1px solid rgba(247,241,227,0.14);
           background:
             linear-gradient(180deg, rgba(247,241,227,0.12), rgba(247,241,227,0.07));
           box-shadow:
             inset 0 1px 0 rgba(255,255,255,0.12),
             0 14px 34px rgba(0,0,0,0.14);
+        }
+
+        @media (max-width: 1024px) {
+          .rc-shell {
+            border-radius: 28px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .rc-section {
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 4.5rem;
+            padding-bottom: 4.5rem;
+          }
+
+          .rc-shell {
+            border-radius: 22px;
+          }
+
+          .rc-chip {
+            width: 100%;
+            justify-content: center;
+            font-size: 9px;
+            letter-spacing: .14em;
+          }
+
+          .rc-primary {
+            width: 100%;
+            min-height: 50px;
+            padding: .95rem 1.1rem;
+            font-size: 10px;
+          }
+
+          .rc-side {
+            border-radius: 18px;
+          }
+
+          .rc-mobile-stack {
+            gap: 1.25rem;
+          }
+
+          .rc-seal-row {
+            justify-content: flex-start;
+          }
+
+          .rc-heading {
+            font-size: clamp(2.5rem, 9vw, 3.6rem);
+            line-height: .98;
+          }
+
+          .rc-lead {
+            font-size: 0.97rem;
+            line-height: 1.7;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .rc-shell {
+            padding: 1rem;
+            border-radius: 20px;
+          }
+
+          .rc-heading {
+            font-size: clamp(2.2rem, 11vw, 3rem);
+          }
+
+          .rc-chip-wrap {
+            gap: .55rem;
+          }
+
+          .rc-chip {
+            padding: .7rem .8rem;
+          }
+
+          .rc-seal-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: .9rem;
+          }
+
+          .rc-files {
+            max-width: 100%;
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -243,19 +329,19 @@ export default function RegisterCTA() {
         />
 
         <div className="mx-auto max-w-6xl">
-          <div className="rc-shell grid gap-8 p-7 sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div>
+          <div className="rc-shell grid gap-6 p-4 sm:p-7 sm:gap-8 sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div className="rc-mobile-stack">
               <div className="rule-mono">
-                <h2 className="font-display text-5xl font-semibold leading-[1.02] text-[#F7F1E3] sm:text-6xl">
+                <h2 className="rc-heading font-display text-5xl font-semibold leading-[1.02] text-[#F7F1E3] sm:text-6xl">
                   Make your move.
                 </h2>
               </div>
 
-              <p className="mt-5 max-w-md font-body text-base leading-relaxed text-[rgba(247,241,227,0.74)]">
+              <p className="rc-lead mt-4 max-w-md font-body text-base leading-relaxed text-[rgba(247,241,227,0.74)] sm:mt-5">
                 Registrations are open across all eight categories.
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-2">
+              <div className="rc-chip-wrap mt-5 flex flex-wrap gap-2 sm:mt-6">
                 <span className="rc-chip">
                   <Grid2X2 size={13} strokeWidth={1.9} />
                   U6 to U20
@@ -270,23 +356,20 @@ export default function RegisterCTA() {
                 </span>
               </div>
 
-              <div className="mt-8 flex items-center gap-4">
+              <div className="mt-6 flex items-center gap-4 sm:mt-8">
                 <a href="#register-form" className="rc-primary">
                   Register your champion
                   <ArrowRight size={15} strokeWidth={2} />
                 </a>
               </div>
 
-              <div className="mt-8 flex items-center gap-4">
+              <div className="rc-seal-row mt-6 flex items-center gap-4 sm:mt-8">
                 <ChessSeal />
                 <MiniFiles />
               </div>
             </div>
 
-            <div
-              id="register-form"
-              className="rc-side p-5 sm:p-6"
-            >
+            <div id="register-form" className="rc-side p-3 sm:p-5 sm:p-6">
               <RegisterForm />
             </div>
           </div>

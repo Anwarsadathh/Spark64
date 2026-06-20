@@ -79,6 +79,7 @@ export default function Gallery() {
   const [paused, setPaused] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const thumbsRef = useRef<HTMLDivElement | null>(null);
+  const hasMounted = useRef(false);
 
   const activeItem = items[activeIndex] ?? items[0];
 
@@ -107,17 +108,34 @@ export default function Gallery() {
     const container = thumbsRef.current;
     if (!container) return;
 
+    // Skip auto-scroll on very first mount so the page doesn't jump down
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
+    }
+
     const activeThumb = container.querySelector(
       `[data-thumb-index="${activeIndex}"]`
     ) as HTMLElement | null;
 
-    if (activeThumb) {
-      activeThumb.scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-        block: "nearest",
-      });
-    }
+    if (!activeThumb) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const thumbRect = activeThumb.getBoundingClientRect();
+
+    const currentScrollLeft = container.scrollLeft;
+    const thumbLeftInsideContainer =
+      thumbRect.left - containerRect.left + currentScrollLeft;
+
+    const targetScrollLeft =
+      thumbLeftInsideContainer -
+      container.clientWidth / 2 +
+      activeThumb.clientWidth / 2;
+
+    container.scrollTo({
+      left: Math.max(0, targetScrollLeft),
+      behavior: "smooth",
+    });
   }, [activeIndex, tab]);
 
   const handleThumbClick = (index: number) => {
@@ -511,7 +529,13 @@ export default function Gallery() {
                 </button>
               </div>
 
-            
+              <button
+                type="button"
+                onClick={() => setPaused((prev) => !prev)}
+                className="gallery-toggle"
+              >
+                {paused ? "Resume auto move" : "Pause auto move"}
+              </button>
             </div>
           </div>
 

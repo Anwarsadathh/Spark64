@@ -8,7 +8,7 @@ const CATEGORIES = ["U6", "U8", "U10", "U12", "U14", "U16", "U18", "U20"];
 type Status = "idle" | "submitting" | "success" | "error";
 
 const inputClass =
-  "w-full rounded-xl border border-board/10 bg-[#FFFDF8] px-4 py-3 font-body text-sm text-board placeholder:text-board/35 outline-none transition focus:border-brass focus:ring-2 focus:ring-brass/15";
+  "w-full min-h-[48px] rounded-xl border border-board/10 bg-[#FFFDF8] px-4 py-3 font-body text-sm text-board placeholder:text-board/35 outline-none transition focus:border-brass focus:ring-2 focus:ring-brass/15";
 
 const labelClass =
   "mb-2 block font-mono text-[11px] uppercase tracking-widest text-board/60";
@@ -49,7 +49,7 @@ export default function RegisterForm() {
 
   if (status === "success") {
     return (
-      <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-brass/25 bg-[#F9F4E8] px-8 py-12 text-center shadow-[0_18px_40px_rgba(16,32,22,0.08)]">
+      <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-brass/25 bg-[#F9F4E8] px-6 py-10 text-center shadow-[0_18px_40px_rgba(16,32,22,0.08)] sm:px-8 sm:py-12">
         <CheckCircle2 size={32} className="text-brass" />
         <p className="font-display text-2xl text-board">You&apos;re in.</p>
         <p className="font-body text-sm leading-relaxed text-board/65">
@@ -69,9 +69,8 @@ export default function RegisterForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto flex max-w-2xl flex-col gap-5 rounded-[22px] border border-board/10 bg-[#F9F4E8] px-6 py-8 text-left shadow-[0_18px_40px_rgba(16,32,22,0.08)] sm:px-10 sm:py-10"
+      className="mx-auto flex w-full max-w-none flex-col gap-4 rounded-[20px] border border-board/10 bg-[#F9F4E8] px-3.5 py-4 text-left shadow-[0_18px_40px_rgba(16,32,22,0.08)] sm:max-w-2xl sm:gap-5 sm:rounded-[22px] sm:px-8 sm:py-8"
     >
-      {/* Honeypot */}
       <input
         type="text"
         name="company"
@@ -81,7 +80,7 @@ export default function RegisterForm() {
         aria-hidden="true"
       />
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="playerName" className={labelClass}>
             Player Full Name *
@@ -96,7 +95,7 @@ export default function RegisterForm() {
         </div>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="category" className={labelClass}>
             Category *
@@ -120,7 +119,7 @@ export default function RegisterForm() {
         </div>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="parentName" className={labelClass}>
             Parent / Guardian Name *
@@ -151,7 +150,7 @@ export default function RegisterForm() {
           name="experience"
           rows={3}
           placeholder="Club, academy, FIDE/AICF rating, past tournaments — anything relevant."
-          className={inputClass}
+          className={`${inputClass} min-h-[110px] resize-none`}
         />
       </div>
 
@@ -165,13 +164,13 @@ export default function RegisterForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-brass px-7 py-3.5 font-mono text-xs uppercase tracking-widest text-ink transition hover:bg-brass-light disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-1 inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-full bg-brass px-7 py-3.5 font-mono text-xs uppercase tracking-widest text-ink transition hover:bg-brass-light disabled:cursor-not-allowed disabled:opacity-60"
       >
         {status === "submitting" && <Loader2 size={15} className="animate-spin" />}
         {status === "submitting" ? "Submitting…" : "Register Now"}
       </button>
 
-      <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-widest text-board/40">
+      <p className="mt-1 text-center font-mono text-[10px] uppercase tracking-widest text-board/40">
         Fields marked * are required
       </p>
     </form>

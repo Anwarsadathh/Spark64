@@ -13,7 +13,14 @@ function CrownMark() {
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id="pr-gold" x1="10" y1="10" x2="74" y2="76" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="pr-gold"
+          x1="10"
+          y1="10"
+          x2="74"
+          y2="76"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop offset="0%" stopColor="#E2C158" />
           <stop offset="52%" stopColor="#C9A227" />
           <stop offset="100%" stopColor="#8C6A12" />
@@ -44,9 +51,9 @@ function PrizeIcon({
   return (
     <div className={`pr-icon-shell ${className}`} aria-hidden="true">
       {type === "trophy" ? (
-        <Trophy size={28} strokeWidth={1.8} />
+        <Trophy size={26} strokeWidth={1.8} />
       ) : (
-        <Medal size={28} strokeWidth={1.8} />
+        <Medal size={26} strokeWidth={1.8} />
       )}
     </div>
   );
@@ -67,7 +74,7 @@ export default function Prizes() {
           observer.disconnect();
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.18 }
     );
 
     observer.observe(node);
@@ -77,14 +84,14 @@ export default function Prizes() {
   return (
     <>
       <style>{`
-        @keyframes prFadeUp {
+        @keyframes prFadeRight {
           from {
             opacity: 0;
-            transform: translateY(24px);
+            transform: translateX(44px);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(0);
           }
         }
 
@@ -154,13 +161,18 @@ export default function Prizes() {
           animation: prGlow 8s ease-in-out infinite;
         }
 
+        .pr-animate {
+          opacity: 0;
+          transform: translateX(44px);
+        }
+
         .pr-visible .pr-animate {
-          animation: prFadeUp .8s ease both;
+          animation: prFadeRight .8s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         .pr-visible .pr-animate:nth-child(1) { animation-delay: 0.04s; }
-        .pr-visible .pr-animate:nth-child(2) { animation-delay: 0.16s; }
-        .pr-visible .pr-animate:nth-child(3) { animation-delay: 0.28s; }
+        .pr-visible .pr-animate:nth-child(2) { animation-delay: 0.18s; }
+        .pr-visible .pr-animate:nth-child(3) { animation-delay: 0.32s; }
 
         .pr-crown {
           width: 78px;
@@ -256,7 +268,7 @@ export default function Prizes() {
           background: rgba(255,255,255,0.42);
           font-family: var(--font-plex-mono), monospace;
           font-size: 10px;
-          letter-spacing: 0.18em;
+          letter-spacing: 0.16em;
           text-transform: uppercase;
           color: rgba(31,61,46,0.56);
         }
@@ -265,6 +277,162 @@ export default function Prizes() {
           border-radius: 18px;
           border: 1px solid rgba(201,162,39,0.14);
           background: rgba(201,162,39,0.08);
+        }
+
+        .pr-winner-box {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+          border-radius: 24px;
+          border: 1px solid rgba(31,61,46,0.10);
+          background: rgba(255,255,255,0.35);
+          padding: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+          .pr-section {
+            padding-top: 5rem !important;
+            padding-bottom: 5rem !important;
+          }
+
+          .pr-hero-panel {
+            border-radius: 24px;
+          }
+
+          .pr-crown {
+            width: 56px;
+            height: 56px;
+          }
+
+          .pr-icon-shell {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+          }
+
+          .pr-pill {
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            padding: 0.42rem 0.68rem;
+          }
+
+          .pr-card {
+            border-radius: 22px;
+          }
+
+          .pr-note {
+            border-radius: 16px;
+          }
+
+          .pr-winner-box {
+            padding: 1rem;
+            gap: 0.75rem;
+            border-radius: 20px;
+            align-items: center;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .pr-hero-panel {
+            padding: 1.25rem !important;
+            gap: 1.25rem !important;
+          }
+
+          .pr-winner-box {
+            padding: 1rem;
+          }
+
+          .pr-mobile-title {
+            font-size: 2rem !important;
+            line-height: 1.02 !important;
+          }
+
+          .pr-mobile-copy {
+            font-size: 15px !important;
+            line-height: 1.75 !important;
+          }
+
+          .pr-mobile-subtitle {
+            font-size: 22px !important;
+            line-height: 1.16 !important;
+          }
+
+          .pr-mobile-card-title {
+            font-size: 28px !important;
+          }
+
+          .pr-mobile-card-copy {
+            font-size: 15px !important;
+            line-height: 1.72 !important;
+          }
+
+          .pr-mobile-note-copy {
+            font-size: 14px !important;
+            line-height: 1.65 !important;
+          }
+
+          .pr-mobile-label {
+            font-size: 11px !important;
+            letter-spacing: 0.16em !important;
+          }
+        }
+
+        @media (max-width: 520px) {
+          .pr-section {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+          }
+
+          .pr-hero-panel {
+            border-radius: 22px;
+          }
+
+          .pr-winner-box {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            padding: 0.95rem;
+            gap: 0.8rem;
+          }
+
+          .pr-crown {
+            width: 48px;
+            height: 48px;
+          }
+
+          .pr-icon-shell {
+            width: 52px;
+            height: 52px;
+          }
+
+          .pr-mobile-title {
+            font-size: 1.85rem !important;
+          }
+
+          .pr-mobile-subtitle {
+            font-size: 20px !important;
+          }
+
+          .pr-mobile-copy {
+            font-size: 14px !important;
+          }
+
+          .pr-mobile-card-title {
+            font-size: 26px !important;
+          }
+
+          .pr-mobile-card-copy {
+            font-size: 14px !important;
+          }
+
+          .pr-mobile-note-copy {
+            font-size: 13px !important;
+          }
+
+          .pr-mobile-label {
+            font-size: 10px !important;
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -301,35 +469,35 @@ export default function Prizes() {
           <div className="pr-hero-panel pr-animate grid gap-8 p-7 sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div>
               <div className="rule-mono">
-                <h2 className="font-display text-4xl font-semibold leading-[1.04] text-board sm:text-5xl">
+                <h2 className="pr-mobile-title font-display text-4xl font-semibold leading-[1.04] text-board sm:text-5xl">
                   Champions take
                   <br />
                   the board.
                 </h2>
               </div>
 
-              <p className="mt-5 max-w-md font-body text-base leading-relaxed text-ink/70">
+              <p className="pr-mobile-copy mt-5 max-w-md font-body text-base leading-relaxed text-ink/70">
                 Spark64 rewards standout performance with championship trophies,
                 finishing medals, and a prize moment that feels worthy of the
                 effort behind every move.
               </p>
 
               <div className="mt-6 flex flex-wrap gap-2">
-                <span className="pr-pill">
+                <span className="pr-pill pr-mobile-label">
                   <Sparkles size={12} strokeWidth={1.8} />
                   8 categories
                 </span>
-                <span className="pr-pill">U6 to U20</span>
-                <span className="pr-pill">2026 edition</span>
+                <span className="pr-pill pr-mobile-label">U6 to U20</span>
+                <span className="pr-pill pr-mobile-label">2026 edition</span>
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-6 rounded-[24px] border border-board/10 bg-white/35 px-6 py-6">
-              <div className="max-w-xs">
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-brass">
+            <div className="pr-winner-box">
+              <div className="min-w-0">
+                <p className="pr-mobile-label font-mono text-[10px] uppercase tracking-[0.2em] text-brass">
                   Winner’s circle
                 </p>
-                <p className="mt-3 font-display text-2xl leading-tight text-board">
+                <p className="pr-mobile-subtitle mt-3 font-display text-2xl leading-tight text-board">
                   Every category ends with a proper podium moment.
                 </p>
               </div>
@@ -343,22 +511,22 @@ export default function Prizes() {
           <div className="mt-10 grid gap-5 md:grid-cols-2">
             <article className="pr-card pr-animate p-7 sm:p-8">
               <PrizeIcon type="trophy" />
-              <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.2em] text-brass">
+              <p className="pr-mobile-label mt-6 font-mono text-[10px] uppercase tracking-[0.2em] text-brass">
                 Championship prize
               </p>
-              <h3 className="mt-3 font-display text-3xl text-board">
+              <h3 className="pr-mobile-card-title mt-3 font-display text-3xl text-board">
                 Trophies
               </h3>
-              <p className="mt-3 max-w-md font-body text-sm leading-relaxed text-ink/70">
+              <p className="pr-mobile-card-copy mt-3 max-w-md font-body text-sm leading-relaxed text-ink/70">
                 Awarded to the champion of each of the eight categories — from
                 U6 through U20 — giving every winning board its own title moment.
               </p>
 
               <div className="pr-note mt-6 px-4 py-4">
-                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45">
+                <p className="pr-mobile-label font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45">
                   Includes
                 </p>
-                <p className="mt-2 font-body text-sm leading-relaxed text-ink/75">
+                <p className="pr-mobile-note-copy mt-2 font-body text-sm leading-relaxed text-ink/75">
                   Category champion recognition, stage presentation, and premium
                   trophy handover.
                 </p>
@@ -367,23 +535,23 @@ export default function Prizes() {
 
             <article className="pr-card pr-animate p-7 sm:p-8">
               <PrizeIcon type="medal" />
-              <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.2em] text-brass">
+              <p className="pr-mobile-label mt-6 font-mono text-[10px] uppercase tracking-[0.2em] text-brass">
                 Finisher recognition
               </p>
-              <h3 className="mt-3 font-display text-3xl text-board">
+              <h3 className="pr-mobile-card-title mt-3 font-display text-3xl text-board">
                 Medals
               </h3>
-              <p className="mt-3 max-w-md font-body text-sm leading-relaxed text-ink/70">
+              <p className="pr-mobile-card-copy mt-3 max-w-md font-body text-sm leading-relaxed text-ink/70">
                 Presented to top finishers in each category, recognising players
                 who held their nerve, played strong rounds, and pushed hardest
                 across the tournament.
               </p>
 
               <div className="pr-note mt-6 px-4 py-4">
-                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45">
+                <p className="pr-mobile-label font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45">
                   Designed for
                 </p>
-                <p className="mt-2 font-body text-sm leading-relaxed text-ink/75">
+                <p className="pr-mobile-note-copy mt-2 font-body text-sm leading-relaxed text-ink/75">
                   Podium-style recognition beyond the winner, giving more young
                   players a memorable finish to the event.
                 </p>

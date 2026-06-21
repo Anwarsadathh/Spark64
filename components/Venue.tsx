@@ -176,6 +176,125 @@ export default function Venue() {
           background: #4A6741;
         }
 
+        @media (max-width: 768px) {
+          .venue-panel {
+            border-radius: 24px !important;
+            padding: 1.5rem !important;
+            gap: 1.25rem !important;
+          }
+
+          .venue-pin {
+            width: 22px;
+            height: 22px;
+          }
+
+          .venue-copy {
+            font-size: 14px !important;
+            line-height: 1.72 !important;
+          }
+
+          .venue-btn {
+            padding: 0.85rem 1.15rem !important;
+            font-size: 11px !important;
+            letter-spacing: 0.14em !important;
+          }
+
+          .venue-chess-dots {
+            grid-template-columns: repeat(6, 8px);
+            gap: 5px;
+            margin-top: 0.9rem;
+          }
+
+          .venue-chess-dots span {
+            width: 8px;
+            height: 8px;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .venue-mobile-wrap {
+            gap: 1rem !important;
+          }
+
+          .venue-mobile-head {
+            gap: 0.9rem !important;
+          }
+
+          .venue-mobile-label {
+            font-size: 10px !important;
+            letter-spacing: 0.16em !important;
+          }
+
+          .venue-mobile-title {
+            font-size: 1.6rem !important;
+            line-height: 1.08 !important;
+          }
+
+          .venue-copy {
+            max-width: 100% !important;
+          }
+
+          .venue-btn {
+            width: 100%;
+            justify-content: center;
+            min-height: 48px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .venue-shell {
+            margin-top: 3rem !important;
+          }
+
+          .venue-mobile-section {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            padding-bottom: 4rem !important;
+          }
+
+          .venue-panel {
+            border-radius: 22px !important;
+            padding: 1.15rem !important;
+          }
+
+          .venue-mobile-head {
+            align-items: flex-start !important;
+            gap: 0.8rem !important;
+          }
+
+          .venue-pin {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+          }
+
+          .venue-mobile-title {
+            font-size: 1.42rem !important;
+          }
+
+          .venue-copy {
+            font-size: 13.5px !important;
+            line-height: 1.68 !important;
+          }
+
+          .venue-btn {
+            border-radius: 999px;
+            padding: 0.82rem 1rem !important;
+            font-size: 10px !important;
+            letter-spacing: 0.13em !important;
+          }
+
+          .venue-chess-dots {
+            grid-template-columns: repeat(6, 7px);
+            gap: 4px;
+          }
+
+          .venue-chess-dots span {
+            width: 7px;
+            height: 7px;
+          }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .venue-panel,
           .venue-orb,
@@ -196,7 +315,10 @@ export default function Venue() {
         }
       `}</style>
 
-   <section id="venue" className="venue-shell mt-16 bg-ivory px-6 pb-24 sm:mt-20">
+      <section
+        id="venue"
+        className="venue-shell venue-mobile-section mt-16 bg-ivory px-6 pb-24 sm:mt-20"
+      >
         <div
           className="venue-orb left-[8%] top-[20%] h-28 w-28"
           style={{ background: "rgba(201,162,39,0.14)" }}
@@ -209,15 +331,15 @@ export default function Venue() {
         />
 
         <div className="mx-auto max-w-5xl">
-          <div className="venue-panel flex flex-col items-start gap-8 rounded-[28px] px-8 py-10 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-5">
+          <div className="venue-panel venue-mobile-wrap flex flex-col items-start gap-8 rounded-[28px] px-8 py-10 sm:flex-row sm:items-center sm:justify-between">
+            <div className="venue-mobile-head flex items-start gap-5">
               <MapPin size={26} className="venue-pin mt-1 shrink-0 text-walnut" />
               <div>
-                <p className="font-mono text-[11px] uppercase tracking-widest text-walnut">
+                <p className="venue-mobile-label font-mono text-[11px] uppercase tracking-widest text-walnut">
                   Venue &amp; Dates
                 </p>
 
-                <p className="mt-2 font-display text-2xl text-board sm:text-3xl">
+                <p className="venue-mobile-title mt-2 font-display text-2xl text-board sm:text-3xl">
                   To Be Announced
                 </p>
 

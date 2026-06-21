@@ -323,29 +323,33 @@ export default function Hero() {
           gap:8px; width:100%; max-width:500px;
         }
         .hero-badge {
-          border-radius:100px; padding:6px 14px;
+          border-radius:100px; padding:7px 16px;
           font-family:var(--font-plex-mono,monospace);
-          font-size:10px; font-weight:500;
-          letter-spacing:0.10em; text-transform:uppercase;
-          color:rgba(244,238,223,0.72);
-          border:1px solid rgba(244,238,223,0.16);
-          background:rgba(244,238,223,0.05);
-          backdrop-filter:blur(8px);
+          font-size:10px; font-weight:600;
+          letter-spacing:0.12em; text-transform:uppercase;
+          color:rgba(255,255,255,0.92);
+          border:1px solid rgba(255,255,255,0.28);
+          background:rgba(255,255,255,0.10);
+          backdrop-filter:blur(10px);
         }
 
         /* ── World Chess Day announcement bar ── */
         .hero-wcd-bar {
-          display:inline-flex; align-items:center; gap:8px;
-          border-radius:100px; padding:6px 16px;
+          display:inline-flex; align-items:center; gap:10px;
+          border-radius:100px; padding:9px 20px;
           font-family:var(--font-plex-mono,monospace);
-          font-size:10px; letter-spacing:0.18em; text-transform:uppercase;
-          color:rgba(201,162,39,0.82);
-          border:0.5px solid rgba(201,162,39,0.22);
-          background:rgba(201,162,39,0.07);
+          font-size:11px; font-weight:600;
+          letter-spacing:0.16em; text-transform:uppercase;
+          color:#FFFFFF;
+          border:1.5px solid rgba(201,162,39,0.70);
+          background:rgba(201,162,39,0.18);
+          backdrop-filter:blur(12px);
+          box-shadow: 0 0 24px rgba(201,162,39,0.20), inset 0 1px 0 rgba(255,255,255,0.10);
         }
         .hero-wcd-dot {
-          width:6px; height:6px; border-radius:50%;
-          background:${BRASS};
+          width:7px; height:7px; border-radius:50%;
+          background:#E2C158;
+          box-shadow: 0 0 8px 2px rgba(226,193,88,0.8);
           animation:s64-statGlow 2s ease-in-out infinite;
           flex-shrink:0;
         }
@@ -413,8 +417,8 @@ export default function Hero() {
           {/* Registration open pill */}
           <motion.p
             variants={fadeUp} initial="hidden" animate="show" custom={1}
-            className="mt-3 font-mono text-[10px] uppercase tracking-[0.26em]"
-            style={{ color:BRASS }}
+            className="mt-3 font-mono text-[11px] font-semibold uppercase tracking-[0.26em]"
+            style={{ color:"#FFFFFF" }}
           >
             Registrations Open · 2026 Edition
           </motion.p>
@@ -437,7 +441,7 @@ export default function Hero() {
           <motion.p
             variants={fadeUp} initial="hidden" animate="show" custom={4}
             className="mt-4 font-display text-2xl italic sm:text-3xl"
-            style={{ color:`rgba(244,238,223,0.88)` }}
+            style={{ color:"#FFFFFF" }}
           >
             Youth Chess Talent Hunt
           </motion.p>
@@ -445,7 +449,7 @@ export default function Hero() {
           <motion.p
             variants={fadeUp} initial="hidden" animate="show" custom={5}
             className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em]"
-            style={{ color:`rgba(244,238,223,0.42)` }}
+            style={{ color:"rgba(255,255,255,0.58)" }}
           >
             Powered by Raven Rows
           </motion.p>
@@ -453,8 +457,8 @@ export default function Hero() {
           {/* Description */}
           <motion.p
             variants={fadeUp} initial="hidden" animate="show" custom={6}
-            className="mx-auto mt-6 max-w-xl text-balance font-body leading-relaxed"
-            style={{ fontSize:"clamp(14px,3.5vw,16px)", color:`rgba(244,238,223,0.72)` }}
+            className="mx-auto mt-6 max-w-xl text-balance font-body font-medium leading-relaxed"
+            style={{ fontSize:"clamp(14px,3.5vw,17px)", color:"rgba(255,255,255,0.90)" }}
           >
             Eight age categories. One board. A new generation of chess talent
             steps up to compete, learn, and earn their place among the champions.

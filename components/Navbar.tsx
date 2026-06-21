@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   Menu,
@@ -18,38 +19,17 @@ const LINKS = [
   { label: "Venue", href: "#venue", icon: MapPin },
 ];
 
-function DraftMark() {
+function Spark64Mark() {
   return (
     <div className="nv-mark-wrap" aria-hidden="true">
-      <svg
-        viewBox="0 0 72 72"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="nv-mark"
-      >
-        <defs>
-          <linearGradient id="nv-gold" x1="10" y1="10" x2="58" y2="60" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#F0D77A" />
-            <stop offset="55%" stopColor="#D4AF37" />
-            <stop offset="100%" stopColor="#8B6912" />
-          </linearGradient>
-        </defs>
-
-        <rect
-          x="10"
-          y="10"
-          width="52"
-          height="52"
-          rx="14"
-          stroke="url(#nv-gold)"
-          strokeWidth="2.5"
-          fill="rgba(255,255,255,0.03)"
-        />
-        <path
-          d="M36 19V31M30.5 24.5H41.5M29.5 34C29.5 32.1 42.5 32.1 42.5 34L44.8 42H27.2L29.5 34ZM25.8 42C22.5 42 20.4 44.1 19.9 47.2L18.8 53H53.2L52.1 47.2C51.6 44.1 49.5 42 46.2 42H25.8Z"
-          fill="url(#nv-gold)"
-        />
-      </svg>
+      <Image
+        src="/gallery/spark64.png"
+        alt="Spark64 logo"
+        width={44}
+        height={44}
+        className="nv-mark-img"
+        priority
+      />
     </div>
   );
 }
@@ -116,7 +96,7 @@ export default function Navbar() {
           position: relative;
           margin: 0 auto;
           max-width: 1240px;
-          border-radius: 22px;
+          border-radius: 20px;
           border: 1px solid rgba(31,61,46,0.08);
           background:
             linear-gradient(180deg, rgba(247,241,227,0.88), rgba(244,238,223,0.78));
@@ -176,7 +156,7 @@ export default function Navbar() {
           align-items: center;
           justify-content: space-between;
           gap: 18px;
-          padding: 14px 16px;
+          padding: 12px 15px;
         }
 
         .nv-brand {
@@ -185,6 +165,7 @@ export default function Navbar() {
           gap: 12px;
           min-width: 0;
           text-decoration: none;
+          flex-shrink: 0;
         }
 
         .nv-mark-wrap {
@@ -202,9 +183,10 @@ export default function Navbar() {
           z-index: -1;
         }
 
-        .nv-mark {
-          width: 42px;
-          height: 42px;
+        .nv-mark-img {
+          width: 44px;
+          height: 44px;
+          object-fit: contain;
           animation: nvFloat 4.5s ease-in-out infinite;
           filter:
             drop-shadow(0 10px 18px rgba(212,175,55,0.12))
@@ -236,6 +218,77 @@ export default function Navbar() {
           text-transform: uppercase;
           color: rgba(31,61,46,0.42);
           white-space: nowrap;
+        }
+
+        .nv-right {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 12px;
+          min-width: 0;
+          flex: 1;
+        }
+
+        .nv-powered {
+          display: none;
+          align-items: center;
+          gap: 10px;
+          padding: 8px 10px;
+          border-radius: 999px;
+          border: 1px solid rgba(31,61,46,0.08);
+          background: rgba(255,255,255,0.34);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+          flex-shrink: 0;
+        }
+
+        .nv-powered-copy {
+          display: flex;
+          flex-direction: column;
+          line-height: 1;
+        }
+
+        .nv-powered-label {
+          font-family: var(--font-plex-mono), monospace;
+          font-size: 8px;
+          letter-spacing: .16em;
+          text-transform: uppercase;
+          color: rgba(31,61,46,0.42);
+        }
+
+        .nv-powered-name {
+          margin-top: 4px;
+          font-family: var(--font-fraunces), serif;
+          font-size: 0.95rem;
+          color: #1F3D2E;
+          white-space: nowrap;
+        }
+
+        .nv-powered-logo {
+          width: 34px;
+          height: 34px;
+          object-fit: contain;
+          border-radius: 999px;
+          background: rgba(255,255,255,0.52);
+          padding: 4px;
+        }
+
+        .nv-powered-mobile {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 42px;
+          height: 42px;
+          border-radius: 999px;
+          border: 1px solid rgba(31,61,46,0.1);
+          background: rgba(255,255,255,0.38);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.42);
+          flex-shrink: 0;
+        }
+
+        .nv-powered-mobile-logo {
+          width: 28px;
+          height: 28px;
+          object-fit: contain;
         }
 
         .nv-desktop {
@@ -279,7 +332,7 @@ export default function Navbar() {
           justify-content: center;
           gap: 8px;
           border-radius: 999px;
-          padding: 12px 18px;
+          padding: 11px 17px;
           background: linear-gradient(135deg, #E7C96A, #D4AF37);
           color: #102016;
           text-decoration: none;
@@ -517,13 +570,29 @@ export default function Navbar() {
           box-shadow: 0 16px 34px rgba(212,175,55,0.22);
         }
 
+        @media (min-width: 1180px) {
+          .nv-powered {
+            display: inline-flex;
+          }
+        }
+
         @media (min-width: 1024px) {
           .nv-desktop {
             display: flex;
           }
 
+          .nv-powered-mobile {
+            display: none;
+          }
+
           .nv-mobile-btn {
             display: none;
+          }
+        }
+
+        @media (max-width: 1023px) {
+          .nv-powered-mobile {
+            display: inline-flex;
           }
         }
 
@@ -538,9 +607,10 @@ export default function Navbar() {
 
           .nv-inner {
             padding: 12px 12px;
+            gap: 10px;
           }
 
-          .nv-mark {
+          .nv-mark-img {
             width: 38px;
             height: 38px;
           }
@@ -552,6 +622,16 @@ export default function Navbar() {
           .nv-sub {
             font-size: 9px;
             letter-spacing: .14em;
+          }
+
+          .nv-powered-mobile {
+            width: 40px;
+            height: 40px;
+          }
+
+          .nv-powered-mobile-logo {
+            width: 26px;
+            height: 26px;
           }
 
           .nv-mobile-btn {
@@ -571,7 +651,7 @@ export default function Navbar() {
 
           .nv-inner {
             padding: 10px 10px;
-            gap: 10px;
+            gap: 8px;
           }
 
           .nv-brand {
@@ -579,7 +659,7 @@ export default function Navbar() {
             min-width: 0;
           }
 
-          .nv-mark {
+          .nv-mark-img {
             width: 34px;
             height: 34px;
           }
@@ -592,6 +672,16 @@ export default function Navbar() {
             font-size: 8px;
           }
 
+          .nv-powered-mobile {
+            width: 38px;
+            height: 38px;
+          }
+
+          .nv-powered-mobile-logo {
+            width: 24px;
+            height: 24px;
+          }
+
           .nv-mobile-btn {
             width: 42px;
             height: 42px;
@@ -600,7 +690,7 @@ export default function Navbar() {
 
         @media (prefers-reduced-motion: reduce) {
           .nv-header,
-          .nv-mark,
+          .nv-mark-img,
           .nv-glow {
             animation: none !important;
           }
@@ -622,9 +712,10 @@ export default function Navbar() {
       <header className="nv-header">
         <div className={`nv-shell ${scrolled ? "scrolled" : ""}`}>
           <div className="nv-glow" aria-hidden="true" />
+
           <div className="nv-inner">
             <a href="#" className="nv-brand" onClick={() => setOpen(false)}>
-              <DraftMark />
+              <Spark64Mark />
               <div className="nv-brand-copy">
                 <p className="nv-title">
                   SPARK<span>64</span>
@@ -633,28 +724,54 @@ export default function Navbar() {
               </div>
             </a>
 
-            <nav className="nv-desktop" aria-label="Primary navigation">
-              {LINKS.map(({ label, href, icon: Icon }) => (
-                <a key={href} href={href} className="nv-link">
-                  <Icon size={14} strokeWidth={1.8} />
-                  {label}
+            <div className="nv-right">
+              <nav className="nv-desktop" aria-label="Primary navigation">
+                {LINKS.map(({ label, href, icon: Icon }) => (
+                  <a key={href} href={href} className="nv-link">
+                    <Icon size={14} strokeWidth={1.8} />
+                    {label}
+                  </a>
+                ))}
+                <a href="#register" className="nv-cta">
+                  Register
+                  <ChevronRight size={15} strokeWidth={2} />
                 </a>
-              ))}
-              <a href="#register" className="nv-cta">
-                Register
-                <ChevronRight size={15} strokeWidth={2} />
-              </a>
-            </nav>
+              </nav>
 
-            <button
-              type="button"
-              aria-label={open ? "Close menu" : "Open menu"}
-              aria-expanded={open}
-              onClick={() => setOpen((v) => !v)}
-              className="nv-mobile-btn"
-            >
-              {open ? <X size={20} /> : <Menu size={20} />}
-            </button>
+              <div className="nv-powered" aria-label="Powered by Raven Rows">
+                <div className="nv-powered-copy">
+                  <span className="nv-powered-label">Powered by</span>
+                  <span className="nv-powered-name">Raven Rows</span>
+                </div>
+                <Image
+                  src="/gallery/ravenrowslogo.png"
+                  alt="Raven Rows logo"
+                  width={34}
+                  height={34}
+                  className="nv-powered-logo"
+                />
+              </div>
+
+              <div className="nv-powered-mobile" aria-label="Raven Rows logo">
+                <Image
+                  src="/gallery/ravenrowslogo.png"
+                  alt="Raven Rows logo"
+                  width={28}
+                  height={28}
+                  className="nv-powered-mobile-logo"
+                />
+              </div>
+
+              <button
+                type="button"
+                aria-label={open ? "Close menu" : "Open menu"}
+                aria-expanded={open}
+                onClick={() => setOpen((v) => !v)}
+                className="nv-mobile-btn"
+              >
+                {open ? <X size={20} /> : <Menu size={20} />}
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -668,7 +785,7 @@ export default function Navbar() {
           <div className="nv-panel-inner">
             <div className="nv-panel-top">
               <div className="nv-panel-brand">
-                <DraftMark />
+                <Spark64Mark />
                 <div>
                   <p className="nv-panel-title">
                     SPARK<span>64</span>

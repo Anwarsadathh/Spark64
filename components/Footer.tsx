@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Mail, Phone, Instagram } from "lucide-react";
 
 export default function Footer() {
@@ -30,6 +31,36 @@ export default function Footer() {
 
         .ft-top {
           border-bottom: 1px solid rgba(247,241,227,0.14);
+        }
+
+        .ft-brand {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .ft-brand-logo-wrap {
+          position: relative;
+          flex-shrink: 0;
+        }
+
+        .ft-brand-logo-wrap::after {
+          content: "";
+          position: absolute;
+          inset: -8px;
+          border-radius: 18px;
+          background: radial-gradient(circle, rgba(212,175,55,0.18), transparent 72%);
+          filter: blur(10px);
+          z-index: -1;
+        }
+
+        .ft-brand-logo {
+          width: 44px;
+          height: 44px;
+          object-fit: contain;
+          filter:
+            drop-shadow(0 10px 18px rgba(212,175,55,0.12))
+            drop-shadow(0 4px 10px rgba(15,23,18,0.10));
         }
 
         .ft-logo {
@@ -84,11 +115,19 @@ export default function Footer() {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 4px;
+          max-width: 78px;
         }
 
         .ft-mini span {
           height: 6px;
           border-radius: 999px;
+        }
+
+        @media (max-width: 640px) {
+          .ft-brand-logo {
+            width: 38px;
+            height: 38px;
+          }
         }
       `}</style>
 
@@ -96,15 +135,29 @@ export default function Footer() {
         <div className="mx-auto max-w-6xl">
           <div className="ft-top flex flex-col gap-10 border-ivory/10 pb-10 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-3">
-              <p className="ft-logo font-display text-2xl font-semibold text-ivory">
-                SPARK<span className="checker-fill">64</span>
-              </p>
-              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ivory/45">
-                Youth Chess Talent Hunt
-              </p>
-              <span className="ft-badge">
-                Powered by Raven Rows
-              </span>
+              <div className="ft-brand">
+                <div className="ft-brand-logo-wrap" aria-hidden="true">
+                  <Image
+                    src="/gallery/spark64.png"
+                    alt="Spark64 logo"
+                    width={44}
+                    height={44}
+                    className="ft-brand-logo"
+                  />
+                </div>
+
+                <div>
+                  <p className="ft-logo font-display text-2xl font-semibold text-ivory">
+                    SPARK<span className="checker-fill">64</span>
+                  </p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ivory/45">
+                    Youth Chess Talent Hunt
+                  </p>
+                </div>
+              </div>
+
+              <span className="ft-badge">Powered by Raven Rows</span>
+
               <div className="mt-4 ft-mini" aria-hidden="true">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <span
@@ -153,19 +206,22 @@ export default function Footer() {
                 href="mailto:hello@spark64.in"
                 className="flex items-center gap-2 font-mono text-[11px] text-ivory/60"
               >
-                <Mail size={14} /> hello@spark64.in
+                <Mail size={14} />
+                hello@spark64.in
               </a>
               <a
                 href="tel:+910000000000"
                 className="flex items-center gap-2 font-mono text-[11px] text-ivory/60"
               >
-                <Phone size={14} /> +91 00000 00000
+                <Phone size={14} />
+                +91 00000 00000
               </a>
               <a
                 href="#"
                 className="flex items-center gap-2 font-mono text-[11px] text-ivory/60"
               >
-                <Instagram size={14} /> @spark64chess
+                <Instagram size={14} />
+                @spark64chess
               </a>
             </div>
           </div>

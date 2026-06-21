@@ -11,12 +11,11 @@ import { useEffect, useRef } from "react";
 */
 
 const STATS = [
-  { num: "8",   suffix: "",  label: "Age categories",     sub: "U6 through U20"         },
-  { num: "2",   suffix: "",  label: "Tournament days",    sub: "Full rounds both days"   },
-  { num: "100", suffix: "+", label: "Players expected",   sub: "Across all categories"   },
-  { num: "1",   suffix: "st",label: "Tournament of its kind", sub: "In the region"       },
+  { num: "8",   suffix: "",  label: "Age categories",        sub: "U6 through U20" },
+  { num: "2",   suffix: "",  label: "Tournament days",       sub: "Full rounds both days" },
+  { num: "100", suffix: "",  label: "Seats in each category", sub: "Limited entries per group" },
+  { num: "1",   suffix: "st", label: "Tournament of its kind", sub: "In the region" },
 ];
-
 /* ── Animated counter hook ── */
 function useCountUp(target: number, duration = 1200, start = false) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -80,9 +79,9 @@ function StatCard({
       <p className="font-display text-lg font-medium" style={{ color: "#16241C" }}>
         {label}
       </p>
-      <p className="font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: "rgba(22,36,28,0.45)" }}>
-        {sub}
-      </p>
+     <p className="about-stat-sub">
+  {sub}
+</p>
     </div>
   );
 }
@@ -239,6 +238,24 @@ export default function About() {
           opacity:0;
           transition: opacity 0.3s;
         }
+          .about-stat-sub {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-family: var(--font-plex-mono, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: #8A6A12;
+  background: rgba(201,162,39,0.10);
+  border: 1px solid rgba(201,162,39,0.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.38);
+}
         .about-stat-card:hover::before { opacity:1; }
         .about-board-wrap {
           opacity: 0;

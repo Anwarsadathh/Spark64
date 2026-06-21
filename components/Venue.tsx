@@ -7,12 +7,8 @@ export default function Venue() {
     <>
       <style>{`
         @keyframes venueFade {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         @keyframes venueClip {
@@ -112,6 +108,40 @@ export default function Venue() {
           color: rgba(22,36,28,0.68);
         }
 
+        .venue-date-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-top: 14px;
+          flex-wrap: wrap;
+        }
+
+        .venue-date-pill {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          min-height: 44px;
+          padding: 10px 16px;
+          border-radius: 999px;
+          background: rgba(201,162,39,0.12);
+          border: 1px solid rgba(201,162,39,0.24);
+          color: #1F3D2E;
+          font-family: var(--font-plex-sans, var(--font-body, sans-serif));
+          font-size: 13px;
+          font-weight: 600;
+          letter-spacing: 0.06em;
+          line-height: 1;
+          white-space: nowrap;
+        }
+
+        .venue-date-pill svg {
+          flex-shrink: 0;
+          width: 15px;
+          height: 15px;
+          opacity: 0.9;
+        }
+
         .venue-btn {
           position: relative;
           overflow: hidden;
@@ -155,10 +185,10 @@ export default function Venue() {
         }
 
         .venue-chess-dots {
-          display: inline-grid;
-          grid-template-columns: repeat(6, 10px);
-          gap: 6px;
-          margin-top: 1rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: 0;
         }
 
         .venue-chess-dots span {
@@ -193,16 +223,21 @@ export default function Venue() {
             line-height: 1.72 !important;
           }
 
+          .venue-date-row {
+            gap: 8px;
+          }
+
+          .venue-date-pill {
+            font-size: 12px;
+            letter-spacing: 0.04em;
+            padding: 9px 14px;
+            min-height: 40px;
+          }
+
           .venue-btn {
             padding: 0.85rem 1.15rem !important;
             font-size: 11px !important;
             letter-spacing: 0.14em !important;
-          }
-
-          .venue-chess-dots {
-            grid-template-columns: repeat(6, 8px);
-            gap: 5px;
-            margin-top: 0.9rem;
           }
 
           .venue-chess-dots span {
@@ -277,16 +312,29 @@ export default function Venue() {
             line-height: 1.68 !important;
           }
 
+          .venue-date-row {
+            align-items: center;
+            gap: 8px;
+          }
+
+          .venue-date-pill {
+            max-width: 100%;
+            font-size: 11.5px;
+            letter-spacing: 0.03em;
+            padding: 8px 12px;
+            min-height: 38px;
+          }
+
+          .venue-date-pill svg {
+            width: 14px;
+            height: 14px;
+          }
+
           .venue-btn {
             border-radius: 999px;
             padding: 0.82rem 1rem !important;
             font-size: 10px !important;
             letter-spacing: 0.13em !important;
-          }
-
-          .venue-chess-dots {
-            grid-template-columns: repeat(6, 7px);
-            gap: 4px;
           }
 
           .venue-chess-dots span {
@@ -340,19 +388,27 @@ export default function Venue() {
                 </p>
 
                 <p className="venue-mobile-title mt-2 font-display text-2xl text-board sm:text-3xl">
-                  To Be Announced
+                  Venue To Be Announced
                 </p>
 
                 <p className="venue-copy mt-2 max-w-md font-body text-sm leading-relaxed">
-                  We&apos;re finalising the tournament hall. Register now and
-                  we&apos;ll send the venue, schedule, and round timings
-                  straight to you the moment they&apos;re locked in.
+                  The tournament will be held on 18th &amp; 19th July. We&apos;re
+                  finalising the venue and will share the confirmed location,
+                  reporting time, and round schedule with all registered players
+                  as soon as it is announced.
                 </p>
 
-                <div className="venue-chess-dots" aria-hidden="true">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <span key={i} style={{ animationDelay: `${i * 90}ms` }} />
-                  ))}
+                <div className="venue-date-row">
+                  <div className="venue-date-pill">
+                    <CalendarClock size={15} />
+                    <span>18th &amp; 19th July</span>
+                  </div>
+
+                  <div className="venue-chess-dots" aria-hidden="true">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <span key={i} style={{ animationDelay: `${i * 90}ms` }} />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

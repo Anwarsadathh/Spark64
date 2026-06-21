@@ -88,7 +88,8 @@ export default function RegisterForm() {
           className="max-w-xs font-body text-sm leading-relaxed"
           style={{ color: "rgba(244,238,223,0.72)" }}
         >
-          Registration received. Venue and schedule will be sent to your email and phone.
+          Registration received. Venue and schedule will be sent to your email
+          and phone.
         </p>
 
         <button
@@ -108,13 +109,13 @@ export default function RegisterForm() {
       <style>{`
         .rf-input {
           width: 100%;
-          min-height: 52px;
-          border-radius: 14px;
+          min-height: 46px;
+          border-radius: 12px;
           border: 1px solid rgba(31,61,46,0.12);
           background: #FFFFFF;
-          padding: 0 14px 0 44px;
+          padding: 0 12px 0 38px;
           font-family: var(--font-plex-sans, sans-serif);
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 500;
           color: #16241C;
           outline: none;
@@ -129,7 +130,7 @@ export default function RegisterForm() {
         .rf-input:focus {
           border-color: rgba(201,162,39,0.75);
           background: #fffdf8;
-          box-shadow: 0 0 0 4px rgba(201,162,39,0.12);
+          box-shadow: 0 0 0 3px rgba(201,162,39,0.12);
         }
 
         .rf-input option {
@@ -139,12 +140,12 @@ export default function RegisterForm() {
 
         .rf-textarea {
           width: 100%;
-          border-radius: 14px;
+          border-radius: 12px;
           border: 1px solid rgba(31,61,46,0.12);
           background: #FFFFFF;
-          padding: 14px 14px 14px 44px;
+          padding: 12px 12px 12px 38px;
           font-family: var(--font-plex-sans, sans-serif);
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 500;
           color: #16241C;
           outline: none;
@@ -160,16 +161,16 @@ export default function RegisterForm() {
         .rf-textarea:focus {
           border-color: rgba(201,162,39,0.75);
           background: #fffdf8;
-          box-shadow: 0 0 0 4px rgba(201,162,39,0.12);
+          box-shadow: 0 0 0 3px rgba(201,162,39,0.12);
         }
 
         .rf-label {
           display: flex;
           align-items: center;
-          gap: 6px;
-          margin-bottom: 8px;
+          gap: 5px;
+          margin-bottom: 6px;
           font-family: var(--font-plex-sans, sans-serif);
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
           letter-spacing: 0.08em;
           text-transform: uppercase;
@@ -182,9 +183,9 @@ export default function RegisterForm() {
 
         .rf-note {
           color: rgba(248,243,231,0.72);
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 600;
-          letter-spacing: 0.04em;
+          letter-spacing: 0.03em;
           text-transform: none;
         }
 
@@ -194,7 +195,7 @@ export default function RegisterForm() {
 
         .rf-icon {
           position: absolute;
-          left: 14px;
+          left: 12px;
           top: 50%;
           transform: translateY(-50%);
           pointer-events: none;
@@ -208,8 +209,8 @@ export default function RegisterForm() {
 
         .rf-icon-top {
           position: absolute;
-          left: 14px;
-          top: 16px;
+          left: 12px;
+          top: 14px;
           pointer-events: none;
           color: rgba(22,36,28,0.42);
           transition: color 0.2s;
@@ -222,20 +223,20 @@ export default function RegisterForm() {
         .rf-divider {
           height: 1px;
           background: linear-gradient(90deg, rgba(244,238,223,0.18), transparent);
-          margin: 4px 0 2px;
+          margin: 2px 0 0;
         }
 
         .rf-submit {
           width: 100%;
-          min-height: 54px;
-          border-radius: 100px;
+          min-height: 48px;
+          border-radius: 999px;
           border: none;
           background: linear-gradient(135deg, ${BRASS_L}, ${BRASS});
           color: #102016;
           font-family: var(--font-plex-mono, monospace);
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 700;
-          letter-spacing: 0.18em;
+          letter-spacing: 0.16em;
           text-transform: uppercase;
           cursor: pointer;
           display: flex;
@@ -282,7 +283,7 @@ export default function RegisterForm() {
 
         .rf-select-arrow {
           position: absolute;
-          right: 14px;
+          right: 12px;
           top: 50%;
           transform: translateY(-50%);
           pointer-events: none;
@@ -290,11 +291,11 @@ export default function RegisterForm() {
         }
 
         .rf-counter {
-          margin-top: 8px;
+          margin-top: 6px;
           text-align: right;
           font-family: var(--font-plex-mono, monospace);
-          font-size: 10px;
-          letter-spacing: 0.12em;
+          font-size: 9px;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
           color: rgba(244,238,223,0.42);
         }
@@ -302,9 +303,74 @@ export default function RegisterForm() {
         .rf-caption {
           color: rgba(244,238,223,0.52);
         }
+
+        @media (max-width: 640px) {
+          .rf-input {
+            min-height: 44px;
+            border-radius: 11px;
+            padding: 0 11px 0 36px;
+            font-size: 12.5px;
+          }
+
+          .rf-textarea {
+            border-radius: 11px;
+            padding: 11px 11px 11px 36px;
+            font-size: 12.5px;
+          }
+
+          .rf-label {
+            margin-bottom: 5px;
+            font-size: 10px;
+            letter-spacing: 0.07em;
+          }
+
+          .rf-note {
+            font-size: 9px;
+          }
+
+          .rf-icon,
+          .rf-icon-top {
+            left: 11px;
+          }
+
+          .rf-icon-top {
+            top: 13px;
+          }
+
+          .rf-select-arrow {
+            right: 11px;
+          }
+
+          .rf-submit {
+            min-height: 46px;
+            font-size: 9.5px;
+            letter-spacing: 0.14em;
+          }
+
+          .rf-counter {
+            font-size: 8.5px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .rf-input {
+            min-height: 44px;
+            padding: 0 10px 0 34px;
+            font-size: 12px;
+          }
+
+          .rf-textarea {
+            padding: 10px 10px 10px 34px;
+            font-size: 12px;
+          }
+
+          .rf-submit {
+            min-height: 44px;
+          }
+        }
       `}</style>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-1 sm:gap-5">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3 p-1 sm:gap-4">
         <input
           type="text"
           name="company"
@@ -314,21 +380,21 @@ export default function RegisterForm() {
           aria-hidden="true"
         />
 
-        <div className="mb-1">
+        <div className="mb-0.5">
           <p
-            className="font-display text-lg font-semibold sm:text-xl"
+            className="font-display text-base font-semibold sm:text-lg"
             style={{ color: "#F4EEDF" }}
           >
             Register Now
           </p>
           <p
-            className="mt-1 font-body text-sm font-medium"
+            className="mt-0.5 font-body text-[13px] font-medium sm:text-sm"
             style={{ color: "#F8F3E7" }}
           >
             All India Youth Chess Talent Hunt
           </p>
           <p
-            className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em]"
+            className="mt-1 font-mono text-[9px] uppercase tracking-[0.14em]"
             style={{ color: "rgba(244,238,223,0.42)" }}
           >
             All eight categories · U6 — U20
@@ -598,7 +664,10 @@ export default function RegisterForm() {
               maxLength={350}
               value={medalText}
               onChange={(e) => {
-                const words = e.target.value.trim().split(/\s+/).filter(Boolean);
+                const words = e.target.value
+                  .trim()
+                  .split(/\s+/)
+                  .filter(Boolean);
                 if (words.length <= 50) {
                   setMedalText(e.target.value);
                 }
@@ -640,9 +709,7 @@ export default function RegisterForm() {
           {status === "submitting" ? "Submitting…" : "Register Now"}
         </button>
 
-        <p
-          className="text-center font-mono text-[9px] uppercase tracking-[0.2em] rf-caption"
-        >
+        <p className="text-center font-mono text-[9px] uppercase tracking-[0.2em] rf-caption">
           Fields marked * are required · Your data is safe with us
         </p>
       </form>

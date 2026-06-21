@@ -460,28 +460,41 @@ export default function Experience() {
   }
 
   @media (max-width: 767px) {
-    .exp-mini-stats {
-      grid-template-columns: 1fr;
-    }
-
-    .exp-mini-stats > div {
-      border-right: none;
-      border-bottom: 1px solid rgba(244,238,223,0.08);
-    }
-
-    .exp-mini-stats > div:last-child {
-      border-bottom: none;
-    }
-
-    .exp-arrow {
-      display: none;
-    }
-
-    .exp-copy {
-      max-width: none;
-    }
+  .exp-mini-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-radius: 16px;
   }
 
+  .exp-mini-stats > div {
+    padding: 0.75rem 0.7rem;
+    border-right: 1px solid rgba(244,238,223,0.08);
+    border-bottom: none;
+    min-width: 0;
+  }
+
+  .exp-mini-stats > div:last-child {
+    border-right: none;
+  }
+
+  .exp-mini-num {
+    font-size: 1.15rem;
+  }
+
+  .exp-mini-label {
+    margin-top: 0.22rem;
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    line-height: 1.35;
+  }
+
+  .exp-arrow {
+    display: none;
+  }
+
+  .exp-copy {
+    max-width: none;
+  }
+}
   @media (prefers-reduced-motion: reduce) {
     .exp-orb,
     .exp-knight,

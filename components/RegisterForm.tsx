@@ -177,59 +177,156 @@ export default function RegisterForm() {
 
         <div className="flex flex-col gap-5 p-1">
 
-          {/* Header */}
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <CreditCard size={16} style={{ color:BRASS }}/>
-              <p className="font-display text-lg font-semibold sm:text-xl" style={{ color:"#F4EEDF" }}>
-                Complete Payment
-              </p>
-            </div>
-         <p className="font-body text-sm" style={{ color:"rgba(244,238,223,0.60)" }}>
-  Transfer the registration fee to the bank account below, then enter your UTR reference number.
-</p>
-          </div>
+      {/* Header */}
+<div>
+  <div className="mb-1 flex items-center gap-2">
+    <CreditCard size={16} style={{ color: BRASS }} />
+    <p
+      className="font-display text-lg font-semibold sm:text-xl"
+      style={{ color: "#F4EEDF" }}
+    >
+      Complete Payment
+    </p>
+  </div>
+  <p
+    className="font-body text-sm"
+    style={{ color: "rgba(244,238,223,0.60)" }}
+  >
+    Transfer the total amount of ₹1062 (₹900 + 18% GST) to the bank account
+    below, then enter your UTR reference number.
+  </p>
+</div>
 
-          {/* Registered player recap */}
-          <div className="rounded-xl px-4 py-3"
-            style={{ background:"rgba(201,162,39,0.07)", border:"0.5px solid rgba(201,162,39,0.20)" }}>
-            <p className="font-mono text-[9px] uppercase tracking-widest mb-1" style={{ color:"rgba(244,238,223,0.38)" }}>
-              Registered for
-            </p>
-            <p className="font-display text-base font-semibold" style={{ color:"#F4EEDF" }}>
-              {savedData.playerName} · <span style={{ color:BRASS }}>{savedData.category}</span>
-            </p>
-          </div>
+{/* Registered player recap */}
+<div
+  className="rounded-xl px-4 py-3"
+  style={{
+    background: "rgba(201,162,39,0.07)",
+    border: "0.5px solid rgba(201,162,39,0.20)",
+  }}
+>
+  <p
+    className="mb-1 font-mono text-[9px] uppercase tracking-widest"
+    style={{ color: "rgba(244,238,223,0.38)" }}
+  >
+    Registered for
+  </p>
+  <p
+    className="font-display text-base font-semibold"
+    style={{ color: "#F4EEDF" }}
+  >
+    {savedData.playerName} · <span style={{ color: BRASS }}>{savedData.category}</span>
+  </p>
+</div>
 
-          {/* Bank details */}
-          <div className="rounded-2xl overflow-hidden"
-            style={{ background:"rgba(244,238,223,0.05)", border:"1px solid rgba(244,238,223,0.10)" }}>
+{/* Payment summary */}
+<div
+  className="rounded-xl px-4 py-4"
+  style={{
+    background: "rgba(244,238,223,0.06)",
+    border: "1px solid rgba(244,238,223,0.10)",
+  }}
+>
+  <div className="flex items-center justify-between gap-4 py-1">
+    <p
+      className="font-mono text-[10px] uppercase tracking-[0.16em]"
+      style={{ color: "rgba(244,238,223,0.42)" }}
+    >
+      Registration Fee
+    </p>
+    <p
+      className="font-display text-base font-semibold"
+      style={{ color: "#F4EEDF" }}
+    >
+      ₹900
+    </p>
+  </div>
 
-            <div className="px-5 py-3" style={{ background:"rgba(201,162,39,0.10)", borderBottom:"0.5px solid rgba(244,238,223,0.08)" }}>
-              <p className="font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color:BRASS }}>
-                Bank Transfer Details
-              </p>
-            </div>
+  <div className="flex items-center justify-between gap-4 py-1">
+    <p
+      className="font-mono text-[10px] uppercase tracking-[0.16em]"
+      style={{ color: "rgba(244,238,223,0.42)" }}
+    >
+      GST (18%)
+    </p>
+    <p
+      className="font-display text-base font-semibold"
+      style={{ color: "#F4EEDF" }}
+    >
+      ₹162
+    </p>
+  </div>
 
-            <div className="px-5 py-2">
-              {[
-                { label:"Bank Name",     value:BANK.name   },
-                { label:"Account No.",   value:BANK.ac     },
-                { label:"IFSC Code",     value:BANK.ifsc   },
-              ].map(({ label, value }) => (
-                <div key={label} className="bank-row">
-                  <div>
-                    <p className="bank-label">{label}</p>
-                    <p className="bank-value">{value}</p>
-                  </div>
-                  <CopyBtn text={value}/>
-                </div>
-              ))}
-            </div>
+  <div
+    className="mt-3 flex items-center justify-between gap-4 rounded-lg px-3 py-3"
+    style={{
+      background: "rgba(201,162,39,0.10)",
+      border: "1px solid rgba(201,162,39,0.18)",
+    }}
+  >
+    <div>
+      <p
+        className="font-mono text-[10px] uppercase tracking-[0.18em]"
+        style={{ color: BRASS }}
+      >
+        Total Payment
+      </p>
+      <p
+        className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em]"
+        style={{ color: "rgba(244,238,223,0.38)" }}
+      >
+        Inclusive of taxes
+      </p>
+    </div>
 
-         
-          </div>
+    <p
+      className="font-display text-2xl font-semibold"
+      style={{ color: BRASS }}
+    >
+      ₹1062
+    </p>
+  </div>
+</div>
 
+{/* Bank details */}
+<div
+  className="overflow-hidden rounded-2xl"
+  style={{
+    background: "rgba(244,238,223,0.05)",
+    border: "1px solid rgba(244,238,223,0.10)",
+  }}
+>
+  <div
+    className="px-5 py-3"
+    style={{
+      background: "rgba(201,162,39,0.10)",
+      borderBottom: "0.5px solid rgba(244,238,223,0.08)",
+    }}
+  >
+    <p
+      className="font-mono text-[10px] uppercase tracking-[0.18em]"
+      style={{ color: BRASS }}
+    >
+      Bank Transfer Details
+    </p>
+  </div>
+
+  <div className="px-5 py-2">
+    {[
+      { label: "Bank Name", value: BANK.name },
+      { label: "Account No.", value: BANK.ac },
+      { label: "IFSC Code", value: BANK.ifsc },
+    ].map(({ label, value }) => (
+      <div key={label} className="bank-row">
+        <div>
+          <p className="bank-label">{label}</p>
+          <p className="bank-value">{value}</p>
+        </div>
+        <CopyBtn text={value} />
+      </div>
+    ))}
+  </div>
+</div>
           {/* UTR form */}
           <form onSubmit={handleUTR} className="flex flex-col gap-3">
             <div>

@@ -607,17 +607,16 @@ export default function Hero() {
             </h1>
           </motion.div>
 
-          <motion.p
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
-            custom={4}
-            className="mt-4 font-display text-2xl italic sm:text-3xl"
-            style={{ color: "#FFFFFF" }}
-          >
-            Youth Chess Talent Hunt
-          </motion.p>
-
+        <motion.p
+  variants={fadeUp}
+  initial="hidden"
+  animate="show"
+  custom={4}
+  className="mt-4 font-display text-2xl italic sm:text-3xl"
+  style={{ color: "#FFFFFF" }}
+>
+  All-India Youth Chess Talent Hunt
+</motion.p>
           <motion.p
             variants={fadeUp}
             initial="hidden"

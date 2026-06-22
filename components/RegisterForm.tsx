@@ -120,32 +120,70 @@ export default function RegisterForm() {
      SUCCESS
      ══════════════════════════════════════ */
   if (status === "success") {
-    return (
-      <div className="flex flex-col items-center gap-4 px-4 py-10 text-center sm:px-6 sm:py-14">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full"
-          style={{ background:"rgba(201,162,39,0.12)", border:"1.5px solid rgba(201,162,39,0.35)" }}>
-          <CheckCircle2 size={32} style={{ color:BRASS }}/>
-        </div>
-        <p className="font-display text-2xl sm:text-3xl" style={{ color:"#F4EEDF" }}>
-          You&apos;re confirmed. ♛
-        </p>
-        <p className="max-w-xs font-body text-sm leading-relaxed" style={{ color:"rgba(244,238,223,0.68)" }}>
-          Registration complete. A confirmation email has been sent to{" "}
-          <strong style={{ color:"#F4EEDF" }}>{savedData.email}</strong>.
-          Venue and schedule details follow soon.
-        </p>
-        <div className="mt-1 rounded-xl px-5 py-3" style={{ background:"rgba(201,162,39,0.08)", border:"0.5px solid rgba(201,162,39,0.22)" }}>
-          <p className="font-mono text-[9px] uppercase tracking-widest" style={{ color:"rgba(244,238,223,0.45)" }}>Registered category</p>
-          <p className="mt-1 font-display text-xl font-semibold" style={{ color:BRASS }}>{savedData.category}</p>
-        </div>
-        <button type="button" onClick={() => { setStatus("idle"); setUtr(""); setSavedData({}); setRowId(""); }}
-          className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] underline-offset-4 hover:underline"
-          style={{ color:BRASS }}>
-          Register another player
-        </button>
+  return (
+    <div className="flex flex-col items-center gap-4 px-4 py-10 text-center sm:px-6 sm:py-14">
+      <div
+        className="flex h-16 w-16 items-center justify-center rounded-full"
+        style={{
+          background: "rgba(201,162,39,0.12)",
+          border: "1.5px solid rgba(201,162,39,0.35)",
+        }}
+      >
+        <CheckCircle2 size={32} style={{ color: BRASS }} />
       </div>
-    );
-  }
+
+      <p
+        className="font-display text-2xl sm:text-3xl"
+        style={{ color: "#F4EEDF" }}
+      >
+        You&apos;re confirmed. ♛
+      </p>
+
+      <p
+        className="max-w-xs font-body text-sm leading-relaxed"
+        style={{ color: "rgba(244,238,223,0.68)" }}
+      >
+        Registration complete. Your payment reference has been submitted
+        successfully. Venue and schedule details will be shared soon.
+      </p>
+
+      <div
+        className="mt-1 rounded-xl px-5 py-3"
+        style={{
+          background: "rgba(201,162,39,0.08)",
+          border: "0.5px solid rgba(201,162,39,0.22)",
+        }}
+      >
+        <p
+          className="font-mono text-[9px] uppercase tracking-widest"
+          style={{ color: "rgba(244,238,223,0.45)" }}
+        >
+          Registered category
+        </p>
+        <p
+          className="mt-1 font-display text-xl font-semibold"
+          style={{ color: BRASS }}
+        >
+          {savedData.category}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => {
+          setStatus("idle");
+          setUtr("");
+          setSavedData({});
+          setRowId("");
+        }}
+        className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] underline-offset-4 hover:underline"
+        style={{ color: BRASS }}
+      >
+        Register another player
+      </button>
+    </div>
+  );
+}
 
   /* ══════════════════════════════════════
      PAYMENT STEP

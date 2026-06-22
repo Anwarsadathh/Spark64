@@ -572,12 +572,12 @@ export default function Hero() {
 
         <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center px-5 pb-16 pt-14 text-center sm:px-8 sm:pb-24 sm:pt-20 md:pt-28">
           {/* Limited seats + World Chess Day */}
-          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0}>
-            <span className="hero-wcd-bar">
-              <span className="hero-wcd-dot" aria-hidden="true" />
-              Limited seats in every category · World Chess Day Special · 20 July 2026
-            </span>
-          </motion.div>
+         <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0}>
+  <span className="hero-wcd-bar">
+    <span className="hero-wcd-dot" aria-hidden="true" />
+    Limited seats in every category · Tournament Dates · 18th & 19th July 2026
+  </span>
+</motion.div>
 
           <motion.p
             variants={fadeUp}

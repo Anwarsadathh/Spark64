@@ -185,9 +185,9 @@ export default function RegisterForm() {
                 Complete Payment
               </p>
             </div>
-            <p className="font-body text-sm" style={{ color:"rgba(244,238,223,0.60)" }}>
-              Transfer the registration fee to the bank account below, then enter your UTR / UPI reference number.
-            </p>
+         <p className="font-body text-sm" style={{ color:"rgba(244,238,223,0.60)" }}>
+  Transfer the registration fee to the bank account below, then enter your UTR reference number.
+</p>
           </div>
 
           {/* Registered player recap */}
@@ -227,20 +227,7 @@ export default function RegisterForm() {
               ))}
             </div>
 
-            {/* UPI QR placeholder */}
-            <div className="px-5 py-4" style={{ borderTop:"0.5px solid rgba(244,238,223,0.08)" }}>
-              <p className="font-mono text-[9px] uppercase tracking-widest mb-3" style={{ color:"rgba(244,238,223,0.35)" }}>
-                Or scan UPI QR
-              </p>
-              <div className="flex h-32 w-32 items-center justify-center rounded-xl mx-auto"
-                style={{ background:"rgba(244,238,223,0.06)", border:"1px dashed rgba(244,238,223,0.18)" }}>
-                {/* Replace this with your actual <Image src="/upi-qr.png" …/> */}
-                <p className="font-mono text-[9px] text-center uppercase tracking-widest px-2"
-                  style={{ color:"rgba(244,238,223,0.28)" }}>
-                  Add UPI<br/>QR here
-                </p>
-              </div>
-            </div>
+         
           </div>
 
           {/* UTR form */}

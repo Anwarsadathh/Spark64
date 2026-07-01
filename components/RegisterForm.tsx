@@ -246,7 +246,7 @@ export default function RegisterForm() {
               </p>
             </div>
             <p className="font-body text-sm" style={{ color: "rgba(244,238,223,0.60)" }}>
-              Transfer ₹1,062 (₹900 + 18% GST) via UPI QR or bank transfer, then
+              Transfer ₹1,000 (inclusive of GST) via UPI QR or bank transfer, then
               enter your UTR reference number below.
             </p>
           </div>
@@ -269,31 +269,19 @@ export default function RegisterForm() {
             className="rounded-xl px-4 py-4"
             style={{ background: "rgba(244,238,223,0.06)", border: "1px solid rgba(244,238,223,0.10)" }}
           >
-            <div className="flex items-center justify-between gap-4 py-1">
-              <p className="font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "rgba(244,238,223,0.42)" }}>
-                Registration Fee
-              </p>
-              <p className="font-display text-base font-semibold" style={{ color: "#F4EEDF" }}>₹900</p>
-            </div>
-            <div className="flex items-center justify-between gap-4 py-1">
-              <p className="font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "rgba(244,238,223,0.42)" }}>
-                GST (18%)
-              </p>
-              <p className="font-display text-base font-semibold" style={{ color: "#F4EEDF" }}>₹162</p>
-            </div>
             <div
-              className="mt-3 flex items-center justify-between gap-4 rounded-lg px-3 py-3"
+              className="flex items-center justify-between gap-4 rounded-lg px-3 py-3"
               style={{ background: "rgba(201,162,39,0.10)", border: "1px solid rgba(201,162,39,0.18)" }}
             >
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: BRASS }}>
-                  Total Payment
+                  Registration Fee
                 </p>
                 <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em]" style={{ color: "rgba(244,238,223,0.38)" }}>
-                  Inclusive of taxes
+                  Inclusive of GST
                 </p>
               </div>
-              <p className="font-display text-2xl font-semibold" style={{ color: BRASS }}>₹1,062</p>
+              <p className="font-display text-2xl font-semibold" style={{ color: BRASS }}>₹1,000</p>
             </div>
           </div>
 
@@ -324,7 +312,7 @@ export default function RegisterForm() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/qr.jpg"
-                  alt="UPI QR Code — scan to pay ₹1,062"
+                  alt="UPI QR Code — scan to pay ₹1,000"
                   style={{
                     display:     "block",
                     width:       "180px",
@@ -338,7 +326,7 @@ export default function RegisterForm() {
                 className="text-center font-mono text-[10px] uppercase tracking-[0.14em]"
                 style={{ color: "rgba(244,238,223,0.48)" }}
               >
-                Scan with any UPI app · ₹1,062
+                Scan with any UPI app · ₹1,000
               </p>
             </div>
           </div>

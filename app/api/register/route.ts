@@ -1,23 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-const WEBHOOK_URL = process.env.GOOGLE_SHEET_WEBHOOK;
-const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
-const SMTP_PORT = parseInt(process.env.SMTP_PORT || "465", 10);
-const SMTP_USER = process.env.SMTP_USER;
-const SMTP_PASS = process.env.SMTP_PASS;
-const ADMIN_EMAIL = "ravenrows@gmail.com";
+const WEBHOOK_URL  = process.env.GOOGLE_SHEET_WEBHOOK;
+const SMTP_HOST    = process.env.SMTP_HOST    || "smtp.gmail.com";
+const SMTP_PORT    = parseInt(process.env.SMTP_PORT || "465", 10);
+const SMTP_USER    = process.env.SMTP_USER;
+const SMTP_PASS    = process.env.SMTP_PASS;
+const ADMIN_EMAIL  = process.env.ADMIN_EMAIL  || "ravenrows@gmail.com";
 
 function getTransporter() {
-  if (!SMTP_USER || !SMTP_PASS) {
-    throw new Error("SMTP credentials are missing");
-  }
-
+  if (!SMTP_USER || !SMTP_PASS) throw new Error("SMTP credentials are missing");
   return nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: SMTP_PORT,
+    host:   SMTP_HOST,
+    port:   SMTP_PORT,
     secure: SMTP_PORT === 465,
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
+    auth:   { user: SMTP_USER, pass: SMTP_PASS },
   });
 }
 
@@ -32,45 +29,37 @@ export async function POST(req: NextRequest) {
       return jsonError("Server configuration error.", 500);
     }
 
-    const body = await req.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const body: any = await req.json();
     console.log("[register] Incoming step:", body?._step || "init");
 
+    // Honeypot
     if (body.company) {
       console.log("[register] Honeypot triggered");
       return NextResponse.json({ ok: true });
     }
 
+    /* ── UTR confirmation step ── */
     if (body._step === "utr") {
       const { utr, rowId, playerName, email, category, phone } = body;
 
-      console.log("[register][utr] Payload:", {
-        rowId,
-        playerName,
-        email,
-        category,
-        hasPhone: !!phone,
-      });
-
       const utrClean = (utr || "").toString().trim().toUpperCase();
-      if (!/^[A-Z0-9]{10,22}$/.test(utrClean)) {
+      if (!utrClean || !/^[A-Z0-9]{10,22}$/.test(utrClean)) {
         console.warn("[register][utr] Invalid UTR:", utrClean);
-        return jsonError(
-          "Invalid UTR number. Please enter a valid 10–22 character UTR / UPI reference.",
-          400
-        );
+        return jsonError("Invalid UTR number. Please enter a valid 10–22 character UTR / UPI reference.", 400);
+      }
+
+      // Guard: refuse if UTR is empty (belt-and-suspenders beyond client validation)
+      if (!utrClean.trim()) {
+        return jsonError("UTR is required before confirming registration.", 400);
       }
 
       let updateRes: Response;
       try {
         updateRes = await fetch(WEBHOOK_URL, {
-          method: "POST",
+          method:  "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            _action: "updateUTR",
-            rowId,
-            utr: utrClean,
-            paymentStatus: "confirmed",
-          }),
+          body:    JSON.stringify({ _action: "updateUTR", rowId, utr: utrClean, paymentStatus: "confirmed" }),
         });
       } catch (fetchErr) {
         console.error("[register][utr] Webhook fetch failed:", fetchErr);
@@ -78,63 +67,41 @@ export async function POST(req: NextRequest) {
       }
 
       const updateText = await updateRes.text();
-      console.log("[register][utr] Webhook status:", updateRes.status);
-      console.log("[register][utr] Webhook raw response:", updateText);
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let updateJson: any = {};
       try {
         updateJson = JSON.parse(updateText);
       } catch {
-        console.error("[register][utr] Webhook returned non-JSON response");
+        console.error("[register][utr] Non-JSON webhook response");
         return jsonError("Invalid response from sheet webhook.", 500);
       }
 
       if (!updateRes.ok || !updateJson.ok) {
         console.error("[register][utr] Sheet update failed:", updateJson);
-        return jsonError(
-          "Could not update payment status. Please contact support.",
-          500
-        );
+        return jsonError("Could not update payment status. Please contact support.", 500);
       }
 
       try {
         const transporter = getTransporter();
-
         await transporter.sendMail({
-          from: `"Spark64 Registration System" <${SMTP_USER}>`,
-          to: ADMIN_EMAIL,
+          from:    `"Spark64 Registration System" <${SMTP_USER}>`,
+          to:      ADMIN_EMAIL,
           subject: `✅ Registration Confirmed — ${playerName} (${category})`,
-          html: adminNotificationEmail({
-            ...body,
-            utr: utrClean,
-            paymentStatus: "confirmed",
-          }),
+          html:    adminNotificationEmail({ ...body, utr: utrClean, paymentStatus: "confirmed" }),
         });
-
         console.log("[register][utr] Admin confirmation mail sent");
       } catch (mailErr) {
+        // Non-fatal: sheet is updated, just log
         console.error("[register][utr] Admin mail failed:", mailErr);
-        return jsonError("Payment updated, but admin mail failed.", 500);
       }
 
-      return NextResponse.json({
-        ok: true,
-        message: "Registration confirmed!",
-      });
+      return NextResponse.json({ ok: true, message: "Registration confirmed!" });
     }
 
+    /* ── Initial registration step ── */
     const required = [
-      "playerName",
-      "dob",
-      "gender",
-      "schoolName",
-      "category",
-      "parentName",
-      "phone",
-      "email",
-      "city",
-      "state",
-      "pincode",
+      "playerName", "dob", "gender", "schoolName", "category",
+      "parentName", "phone", "email", "city", "state", "pincode",
     ];
 
     for (const field of required) {
@@ -157,17 +124,17 @@ export async function POST(req: NextRequest) {
     const payload = {
       ...body,
       paymentStatus: "pending",
-      utr: "",
+      utr:           "",
       submittedAt,
-      _action: "newRegistration",
+      _action:       "newRegistration",
     };
 
     let sheetRes: Response;
     try {
       sheetRes = await fetch(WEBHOOK_URL, {
-        method: "POST",
+        method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body:    JSON.stringify(payload),
       });
     } catch (fetchErr) {
       console.error("[register][init] Webhook fetch failed:", fetchErr);
@@ -175,14 +142,12 @@ export async function POST(req: NextRequest) {
     }
 
     const sheetText = await sheetRes.text();
-    console.log("[register][init] Webhook status:", sheetRes.status);
-    console.log("[register][init] Webhook raw response:", sheetText);
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let sheetJson: any = {};
     try {
       sheetJson = JSON.parse(sheetText);
     } catch {
-      console.error("[register][init] Webhook returned non-JSON response");
+      console.error("[register][init] Non-JSON webhook response");
       return jsonError("Invalid response from sheet webhook.", 500);
     }
 
@@ -193,58 +158,53 @@ export async function POST(req: NextRequest) {
 
     try {
       const transporter = getTransporter();
-
       await transporter.sendMail({
-        from: `"Spark64 Registration System" <${SMTP_USER}>`,
-        to: ADMIN_EMAIL,
+        from:    `"Spark64 Registration System" <${SMTP_USER}>`,
+        to:      ADMIN_EMAIL,
         subject: `🕐 New Registration Pending — ${body.playerName} (${body.category})`,
-        html: adminNotificationEmail({
-          ...body,
-          utr: "",
-          paymentStatus: "pending",
-          submittedAt,
-        }),
+        html:    adminNotificationEmail({ ...body, utr: "", paymentStatus: "pending", submittedAt }),
       });
-
       console.log("[register][init] Admin pending mail sent");
     } catch (mailErr) {
+      // Non-fatal
       console.warn("[register][init] Admin notify failed:", mailErr);
     }
 
     return NextResponse.json({
-      ok: true,
-      rowId: sheetJson.rowId || sheetJson.id || "",
+      ok:      true,
+      rowId:   sheetJson.rowId || sheetJson.id || "",
       message: "Registration saved. Please complete payment.",
     });
+
   } catch (err) {
     console.error("[register] Fatal error:", err);
     return jsonError("Registration failed. Please try again.", 500);
   }
 }
 
-function adminNotificationEmail(data: Record<string, string>) {
+/* ── Email template ── */
+function adminNotificationEmail(data: Record<string, string>): string {
   const fields: [string, string][] = [
-    ["Player Name", data.playerName],
-    ["DOB", data.dob],
-    ["Gender", data.gender],
-    ["School", data.schoolName],
-    ["Category", data.category],
-    ["Parent/Guardian", data.parentName],
-    ["Phone", data.phone],
-    ["Email", data.email],
-    ["City", data.city],
-    ["State", data.state],
-    ["Pincode", data.pincode],
-    ["FIDE ID", data.fideId || "—"],
-    ["FIDE Rating", data.fideRating || "—"],
-    ["Prev. Medals", data.previousMedals || "—"],
-    ["UTR / Ref", data.utr || "—"],
+    ["Player Name",    data.playerName],
+    ["DOB",            data.dob],
+    ["Gender",         data.gender],
+    ["School",         data.schoolName],
+    ["Category",       data.category],
+    ["Parent/Guardian",data.parentName],
+    ["Phone",          data.phone],
+    ["Email",          data.email],
+    ["City",           data.city],
+    ["State",          data.state],
+    ["Pincode",        data.pincode],
+    ["FIDE ID",        data.fideId       || "—"],
+    ["FIDE Rating",    data.fideRating    || "—"],
+    ["Prev. Medals",   data.previousMedals|| "—"],
+    ["UTR / Ref",      data.utr          || "—"],
     ["Payment Status", data.paymentStatus || "—"],
-    ["Submitted At", data.submittedAt || new Date().toISOString()],
+    ["Submitted At",   data.submittedAt  || new Date().toISOString()],
   ];
 
-  return `
-<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html>
 <body style="margin:0;padding:0;background:#f4eedf;font-family:'Helvetica Neue',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4eedf;padding:32px 16px;">
@@ -278,7 +238,7 @@ function adminNotificationEmail(data: Record<string, string>) {
 </html>`;
 }
 
-function detailRow(label: string, value: string) {
+function detailRow(label: string, value: string): string {
   return `
   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:10px;">
     <tr>

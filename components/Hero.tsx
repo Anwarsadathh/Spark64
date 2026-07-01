@@ -577,7 +577,7 @@ export default function Hero() {
     <span className="hero-wcd-dot" aria-hidden="true" />
     Limited seats in every category · Tournament Dates · 18th & 19th July 2026
   </span>
-</motion.div>
+</motion.div>3
 
           <motion.p
             variants={fadeUp}

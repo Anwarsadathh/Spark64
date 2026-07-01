@@ -28,14 +28,13 @@ import {
 const CATEGORIES = ["U6", "U8", "U10", "U12", "U14", "U16", "U18", "U20"];
 const GENDERS = ["Male", "Female", "Other"];
 
-const BRASS = "#C9A227";
+const BRASS   = "#C9A227";
 const BRASS_L = "#E2C158";
-const DARK = "#1F3D2E";
 
 const BANK = {
-  name: "Kotak Mahindra Bank Ltd",
-  ac: "7350327627",
-  ifsc: "KKBK0005203",
+  name:   "Kotak Mahindra Bank Ltd",
+  ac:     "7350327627",
+  ifsc:   "KKBK0005203",
   branch: "KKBK0005203",
 };
 
@@ -55,9 +54,7 @@ function CopyBtn({ text }: { text: string }) {
       className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest transition"
       style={{
         background: copied ? "rgba(201,162,39,0.20)" : "rgba(201,162,39,0.08)",
-        border: `0.5px solid ${
-          copied ? "rgba(201,162,39,0.5)" : "rgba(201,162,39,0.22)"
-        }`,
+        border: `0.5px solid ${copied ? "rgba(201,162,39,0.5)" : "rgba(201,162,39,0.22)"}`,
         color: BRASS,
       }}
     >
@@ -68,136 +65,124 @@ function CopyBtn({ text }: { text: string }) {
 }
 
 export default function RegisterForm() {
-  const [status, setStatus] = useState<Status>("idle");
-  const [error, setError] = useState("");
-  const [medalText, setMedalText] = useState("");
-  const [utr, setUtr] = useState("");
-  const [rowId, setRowId] = useState("");
-  const [savedData, setSavedData] = useState<Record<string, string>>({});
-
-  // Rules gate state
+  const [status,        setStatus]        = useState<Status>("idle");
+  const [error,         setError]         = useState("");
+  const [medalText,     setMedalText]     = useState("");
+  const [utr,           setUtr]           = useState("");
+  const [rowId,         setRowId]         = useState("");
+  const [savedData,     setSavedData]     = useState<Record<string, string>>({});
   const [agreedToRules, setAgreedToRules] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [showForm,      setShowForm]      = useState(false);
 
-  /* ── Step 1: Submit registration ── */
+  /* ── Step 1: Submit registration details ── */
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("submitting");
     setError("");
     const form = e.currentTarget;
-    const data = Object.fromEntries(
-      new FormData(form).entries(),
-    ) as Record<string, string>;
+    const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
 
     try {
-      const res = await fetch("/api/register", {
-        method: "POST",
+      const res  = await fetch("/api/register", {
+        method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, _step: "init" }),
+        body:    JSON.stringify({ ...data, _step: "init" }),
       });
       const json = await res.json();
-      if (!res.ok || !json.ok)
-        throw new Error(json.error || "Something went wrong.");
+      if (!res.ok || !json.ok) throw new Error(json.error || "Something went wrong.");
       setSavedData(data);
       setRowId(json.rowId || "");
       setStatus("payment");
     } catch (err) {
       setStatus("error");
-      setError(
-        err instanceof Error ? err.message : "Something went wrong.",
-      );
+      setError(err instanceof Error ? err.message : "Something went wrong.");
       setTimeout(() => setStatus("idle"), 100);
     }
   }
 
-  /* ── Step 2: Submit UTR ── */
+  /* ── Step 2: Submit UTR after payment ── */
   async function handleUTR(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("verifying");
     setError("");
+
     const utrClean = utr.trim().toUpperCase();
-    if (!/^[A-Z0-9]{10,22}$/.test(utrClean)) {
-      setError(
-        "Invalid UTR. Please enter a valid 10–22 character UTR / UPI reference number.",
-      );
+
+    // Client-side guard — must be non-empty AND match format before API call
+    if (!utrClean || !/^[A-Z0-9]{10,22}$/.test(utrClean)) {
+      setError("Invalid UTR. Please enter a valid 10–22 character UTR / UPI reference number.");
       setStatus("payment");
       return;
     }
+
     try {
-      const res = await fetch("/api/register", {
-        method: "POST",
+      const res  = await fetch("/api/register", {
+        method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          _step: "utr",
-          utr: utrClean,
+        body:    JSON.stringify({
+          _step:      "utr",
+          utr:        utrClean,
           rowId,
           playerName: savedData.playerName,
-          email: savedData.email,
-          category: savedData.category,
-          phone: savedData.phone,
+          email:      savedData.email,
+          category:   savedData.category,
+          phone:      savedData.phone,
         }),
       });
       const json = await res.json();
-      if (!res.ok || !json.ok)
-        throw new Error(json.error || "Verification failed.");
+      if (!res.ok || !json.ok) throw new Error(json.error || "Verification failed.");
+
+      // ✅ Only reach here after valid UTR + successful server response
       setStatus("success");
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Verification failed.",
-      );
+      setError(err instanceof Error ? err.message : "Verification failed.");
       setStatus("payment");
     }
   }
 
   /* ══════════════════════════════════════
-     SUCCESS
+     SUCCESS — never shown without a valid UTR (double-guarded)
      ═══════════════════════════════════════ */
-  if (status === "success") {
+  if (status === "success" && utr.trim()) {
     return (
       <div className="flex flex-col items-center gap-4 px-4 py-10 text-center sm:px-6 sm:py-14">
         <div
           className="flex h-16 w-16 items-center justify-center rounded-full"
-          style={{
-            background: "rgba(201,162,39,0.12)",
-            border: "1.5px solid rgba(201,162,39,0.35)",
-          }}
+          style={{ background: "rgba(201,162,39,0.12)", border: "1.5px solid rgba(201,162,39,0.35)" }}
         >
           <CheckCircle2 size={32} style={{ color: BRASS }} />
         </div>
 
-        <p
-          className="font-display text-2xl sm:text-3xl"
-          style={{ color: "#F4EEDF" }}
-        >
+        <p className="font-display text-2xl sm:text-3xl" style={{ color: "#F4EEDF" }}>
           You&apos;re confirmed. ♛
         </p>
 
-        <p
-          className="max-w-xs font-body text-sm leading-relaxed"
-          style={{ color: "rgba(244,238,223,0.68)" }}
-        >
-          Registration complete. Your payment reference has been submitted
-          successfully. Venue and schedule details will be shared soon.
+        <p className="max-w-xs font-body text-sm leading-relaxed" style={{ color: "rgba(244,238,223,0.68)" }}>
+          Registration complete. Your payment reference has been submitted successfully.
+          Venue and schedule details will be shared soon.
         </p>
 
         <div
           className="mt-1 rounded-xl px-5 py-3"
-          style={{
-            background: "rgba(201,162,39,0.08)",
-            border: "0.5px solid rgba(201,162,39,0.22)",
-          }}
+          style={{ background: "rgba(201,162,39,0.08)", border: "0.5px solid rgba(201,162,39,0.22)" }}
         >
-          <p
-            className="font-mono text-[9px] uppercase tracking-widest"
-            style={{ color: "rgba(244,238,223,0.45)" }}
-          >
+          <p className="font-mono text-[9px] uppercase tracking-widest" style={{ color: "rgba(244,238,223,0.45)" }}>
             Registered category
           </p>
-          <p
-            className="mt-1 font-display text-xl font-semibold"
-            style={{ color: BRASS }}
-          >
+          <p className="mt-1 font-display text-xl font-semibold" style={{ color: BRASS }}>
             {savedData.category}
+          </p>
+        </div>
+
+        <div
+          className="mt-1 rounded-xl px-5 py-3"
+          style={{ background: "rgba(201,162,39,0.05)", border: "0.5px solid rgba(201,162,39,0.15)" }}
+        >
+          <p className="font-mono text-[9px] uppercase tracking-widest" style={{ color: "rgba(244,238,223,0.45)" }}>
+            UTR / Reference submitted
+          </p>
+          <p className="mt-1 font-mono text-base font-semibold" style={{ color: "#F4EEDF" }}>
+            {utr.trim().toUpperCase()}
           </p>
         </div>
 
@@ -210,6 +195,8 @@ export default function RegisterForm() {
             setRowId("");
             setAgreedToRules(false);
             setShowForm(false);
+            setMedalText("");
+            setError("");
           }}
           className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] underline-offset-4 hover:underline"
           style={{ color: BRASS }}
@@ -249,146 +236,131 @@ export default function RegisterForm() {
         `}</style>
 
         <div className="flex flex-col gap-5 p-1">
+
           {/* Header */}
           <div>
             <div className="mb-1 flex items-center gap-2">
               <CreditCard size={16} style={{ color: BRASS }} />
-              <p
-                className="font-display text-lg font-semibold sm:text-xl"
-                style={{ color: "#F4EEDF" }}
-              >
+              <p className="font-display text-lg font-semibold sm:text-xl" style={{ color: "#F4EEDF" }}>
                 Complete Payment
               </p>
             </div>
-            <p
-              className="font-body text-sm"
-              style={{ color: "rgba(244,238,223,0.60)" }}
-            >
-              Transfer the total amount of ₹1062 (₹900 + 18% GST) to the bank
-              account below, then enter your UTR reference number.
+            <p className="font-body text-sm" style={{ color: "rgba(244,238,223,0.60)" }}>
+              Transfer ₹1,062 (₹900 + 18% GST) via UPI QR or bank transfer, then
+              enter your UTR reference number below.
             </p>
           </div>
 
           {/* Registered player recap */}
           <div
             className="rounded-xl px-4 py-3"
-            style={{
-              background: "rgba(201,162,39,0.07)",
-              border: "0.5px solid rgba(201,162,39,0.20)",
-            }}
+            style={{ background: "rgba(201,162,39,0.07)", border: "0.5px solid rgba(201,162,39,0.20)" }}
           >
-            <p
-              className="mb-1 font-mono text-[9px] uppercase tracking-widest"
-              style={{ color: "rgba(244,238,223,0.38)" }}
-            >
+            <p className="mb-1 font-mono text-[9px] uppercase tracking-widest" style={{ color: "rgba(244,238,223,0.38)" }}>
               Registered for
             </p>
-            <p
-              className="font-display text-base font-semibold"
-              style={{ color: "#F4EEDF" }}
-            >
-              {savedData.playerName} ·{" "}
-              <span style={{ color: BRASS }}>{savedData.category}</span>
+            <p className="font-display text-base font-semibold" style={{ color: "#F4EEDF" }}>
+              {savedData.playerName} · <span style={{ color: BRASS }}>{savedData.category}</span>
             </p>
           </div>
 
           {/* Payment summary */}
           <div
             className="rounded-xl px-4 py-4"
-            style={{
-              background: "rgba(244,238,223,0.06)",
-              border: "1px solid rgba(244,238,223,0.10)",
-            }}
+            style={{ background: "rgba(244,238,223,0.06)", border: "1px solid rgba(244,238,223,0.10)" }}
           >
             <div className="flex items-center justify-between gap-4 py-1">
-              <p
-                className="font-mono text-[10px] uppercase tracking-[0.16em]"
-                style={{ color: "rgba(244,238,223,0.42)" }}
-              >
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "rgba(244,238,223,0.42)" }}>
                 Registration Fee
               </p>
-              <p
-                className="font-display text-base font-semibold"
-                style={{ color: "#F4EEDF" }}
-              >
-                ₹900
-              </p>
+              <p className="font-display text-base font-semibold" style={{ color: "#F4EEDF" }}>₹900</p>
             </div>
-
             <div className="flex items-center justify-between gap-4 py-1">
-              <p
-                className="font-mono text-[10px] uppercase tracking-[0.16em]"
-                style={{ color: "rgba(244,238,223,0.42)" }}
-              >
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "rgba(244,238,223,0.42)" }}>
                 GST (18%)
               </p>
-              <p
-                className="font-display text-base font-semibold"
-                style={{ color: "#F4EEDF" }}
-              >
-                ₹162
-              </p>
+              <p className="font-display text-base font-semibold" style={{ color: "#F4EEDF" }}>₹162</p>
             </div>
-
             <div
               className="mt-3 flex items-center justify-between gap-4 rounded-lg px-3 py-3"
-              style={{
-                background: "rgba(201,162,39,0.10)",
-                border: "1px solid rgba(201,162,39,0.18)",
-              }}
+              style={{ background: "rgba(201,162,39,0.10)", border: "1px solid rgba(201,162,39,0.18)" }}
             >
               <div>
-                <p
-                  className="font-mono text-[10px] uppercase tracking-[0.18em]"
-                  style={{ color: BRASS }}
-                >
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: BRASS }}>
                   Total Payment
                 </p>
-                <p
-                  className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em]"
-                  style={{ color: "rgba(244,238,223,0.38)" }}
-                >
+                <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em]" style={{ color: "rgba(244,238,223,0.38)" }}>
                   Inclusive of taxes
                 </p>
               </div>
+              <p className="font-display text-2xl font-semibold" style={{ color: BRASS }}>₹1,062</p>
+            </div>
+          </div>
 
-              <p
-                className="font-display text-2xl font-semibold"
-                style={{ color: BRASS }}
+          {/* ── UPI QR CODE ── */}
+          <div
+            className="overflow-hidden rounded-2xl"
+            style={{ background: "rgba(244,238,223,0.05)", border: "1px solid rgba(244,238,223,0.10)" }}
+          >
+            <div
+              className="px-5 py-3"
+              style={{ background: "rgba(201,162,39,0.10)", borderBottom: "0.5px solid rgba(244,238,223,0.08)" }}
+            >
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: BRASS }}>
+                Scan &amp; Pay — UPI
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-3 py-6">
+              {/* White card behind QR so it scans cleanly on dark bg */}
+              <div
+                style={{
+                  background:    "#ffffff",
+                  borderRadius:  "16px",
+                  padding:       "10px",
+                  boxShadow:     "0 6px 24px rgba(0,0,0,0.22)",
+                  display:       "inline-block",
+                }}
               >
-                ₹1062
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/qr.jpg"
+                  alt="UPI QR Code — scan to pay ₹1,062"
+                  style={{
+                    display:     "block",
+                    width:       "180px",
+                    height:      "180px",
+                    objectFit:   "contain",
+                    borderRadius: "8px",
+                  }}
+                />
+              </div>
+              <p
+                className="text-center font-mono text-[10px] uppercase tracking-[0.14em]"
+                style={{ color: "rgba(244,238,223,0.48)" }}
+              >
+                Scan with any UPI app · ₹1,062
               </p>
             </div>
           </div>
 
-          {/* Bank details */}
+          {/* Bank transfer details */}
           <div
             className="overflow-hidden rounded-2xl"
-            style={{
-              background: "rgba(244,238,223,0.05)",
-              border: "1px solid rgba(244,238,223,0.10)",
-            }}
+            style={{ background: "rgba(244,238,223,0.05)", border: "1px solid rgba(244,238,223,0.10)" }}
           >
             <div
               className="px-5 py-3"
-              style={{
-                background: "rgba(201,162,39,0.10)",
-                borderBottom: "0.5px solid rgba(244,238,223,0.08)",
-              }}
+              style={{ background: "rgba(201,162,39,0.10)", borderBottom: "0.5px solid rgba(244,238,223,0.08)" }}
             >
-              <p
-                className="font-mono text-[10px] uppercase tracking-[0.18em]"
-                style={{ color: BRASS }}
-              >
-                Bank Transfer Details
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: BRASS }}>
+                Or Transfer via Bank Account
               </p>
             </div>
-
             <div className="px-5 py-2">
               {[
-                { label: "Bank Name", value: BANK.name },
-                { label: "Account No.", value: BANK.ac },
-                { label: "IFSC Code", value: BANK.ifsc },
+                { label: "Bank Name",    value: BANK.name },
+                { label: "Account No.", value: BANK.ac   },
+                { label: "IFSC Code",   value: BANK.ifsc },
               ].map(({ label, value }) => (
                 <div key={label} className="bank-row">
                   <div>
@@ -401,42 +373,27 @@ export default function RegisterForm() {
             </div>
           </div>
 
-          {/* UTR form */}
+          {/* UTR form — disabled until payment is made */}
           <form onSubmit={handleUTR} className="flex flex-col gap-3">
             <div>
-              <label
-                htmlFor="utr"
-                className="mb-2 flex items-center gap-2"
-              >
-                <span
-                  className="font-mono text-[10px] uppercase tracking-[0.16em] font-bold"
-                  style={{ color: "#F8F3E7" }}
-                >
+              <label htmlFor="utr" className="mb-2 flex items-center gap-2">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] font-bold" style={{ color: "#F8F3E7" }}>
                   UTR / UPI Reference Number
                 </span>
-                <span
-                  className="font-mono text-[9px]"
-                  style={{ color: BRASS }}
-                >
-                  *
-                </span>
+                <span className="font-mono text-[9px]" style={{ color: BRASS }}>*</span>
               </label>
-              <p
-                className="mb-2 font-body text-xs"
-                style={{ color: "rgba(244,238,223,0.48)" }}
-              >
-                After transferring, enter the UTR number or UPI transaction
-                reference from your bank app.
+              <p className="mb-2 font-body text-xs" style={{ color: "rgba(244,238,223,0.48)" }}>
+                After paying, enter the UTR or UPI transaction reference shown in your bank / UPI app.
               </p>
               <div style={{ position: "relative" }}>
                 <Hash
                   size={15}
                   style={{
-                    position: "absolute",
-                    left: 14,
-                    top: "50%",
+                    position:  "absolute",
+                    left:      14,
+                    top:       "50%",
                     transform: "translateY(-50%)",
-                    color: "rgba(22,36,28,0.45)",
+                    color:     "rgba(22,36,28,0.45)",
                     pointerEvents: "none",
                   }}
                 />
@@ -444,7 +401,10 @@ export default function RegisterForm() {
                   id="utr"
                   type="text"
                   value={utr}
-                  onChange={(e) => setUtr(e.target.value.toUpperCase())}
+                  onChange={(e) => {
+                    setUtr(e.target.value.toUpperCase());
+                    if (error) setError("");
+                  }}
                   required
                   placeholder="e.g. 517241XXXXXX or UPI ref"
                   className="utr-input"
@@ -454,23 +414,15 @@ export default function RegisterForm() {
                   maxLength={30}
                 />
               </div>
-              <p
-                className="mt-1 font-mono text-[9px] uppercase tracking-widest"
-                style={{ color: "rgba(244,238,223,0.28)" }}
-              >
-                10–22 alphanumeric characters
+              <p className="mt-1 font-mono text-[9px] uppercase tracking-widest" style={{ color: "rgba(244,238,223,0.28)" }}>
+                10–22 alphanumeric characters · required before confirming
               </p>
             </div>
 
-            {/* Error */}
             {error && (
               <div
                 className="flex items-start gap-3 rounded-xl px-4 py-3 text-sm"
-                style={{
-                  background: "rgba(239,68,68,0.10)",
-                  border: "1px solid rgba(239,68,68,0.25)",
-                  color: "#fecaca",
-                }}
+                style={{ background: "rgba(239,68,68,0.10)", border: "1px solid rgba(239,68,68,0.25)", color: "#fecaca" }}
               >
                 <AlertCircle size={15} className="mt-0.5 shrink-0" />
                 {error}
@@ -483,13 +435,9 @@ export default function RegisterForm() {
               className="rf-submit"
             >
               {status === "verifying" ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" /> Verifying…
-                </>
+                <><Loader2 size={16} className="animate-spin" /> Verifying…</>
               ) : (
-                <>
-                  <CheckCircle2 size={15} /> Confirm &amp; Submit
-                </>
+                <><CheckCircle2 size={15} /> Confirm &amp; Submit</>
               )}
             </button>
           </form>
@@ -521,7 +469,7 @@ export default function RegisterForm() {
   }
 
   /* ══════════════════════════════════════
-     RULES & REGULATIONS GATE
+     RULES GATE
      ═══════════════════════════════════════ */
   if (!showForm) {
     const RULES = [
@@ -531,208 +479,81 @@ export default function RegisterForm() {
       "Tie-break: Buchholz cut 1, Buchholz, Sonneborn-Berger, Direct Encounter, Greater no. of victories",
       "Disqualification: If any player is found concealing identity, concealing rating, playing with a different name, cheating, using an electronic gadget, or misbehaving with players or arbiters, the player will be expelled from the event.",
       "Discussion / Analysis: While a game is in progress, a player may talk only to an Arbiter or to the opponent as permitted by the Laws of Chess. Analysis is not allowed in the playing hall.",
-      "Withdrawal: If a player is absent in any round without informing the Chief Arbiter in writing, the player’s name will be removed from pairing.",
-      "Draw agreement: Players can agree to a draw only after completion of Black’s 20th move.",
+      "Withdrawal: If a player is absent in any round without informing the Chief Arbiter in writing, the player's name will be removed from pairing.",
+      "Draw agreement: Players can agree to a draw only after completion of Black's 20th move.",
       "Spectators: Players who have finished their game are treated as spectators and are not allowed in the playing hall.",
       "Accompanying persons are requested to wait in the designated waiting area.",
-      "The Chief Arbiter’s decision is final in all cases of dispute.",
+      "The Chief Arbiter's decision is final in all cases of dispute.",
       "Submission of results: Both players must together go to the results table and ensure that the result is input correctly. Change of result by one player will not be accepted.",
       "For any situation not mentioned here, the detailed FIDE handbook of rules will apply.",
     ];
 
     return (
       <>
-      <style>{`
-  .rules-shell {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  .rules-card {
-    border-radius: 24px;
-    overflow: hidden;
-    background: #ffffff;
-    border: 1px solid rgba(31, 61, 46, 0.10);
-    box-shadow:
-      0 12px 30px rgba(16, 24, 22, 0.08),
-      0 2px 8px rgba(16, 24, 22, 0.05);
-  }
-
-  .rules-card::before {
-    content: "";
-    display: block;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, ${BRASS}, ${BRASS_L}, ${BRASS}, transparent);
-    background-size: 200% auto;
-    animation: rulesShimmer 4s linear infinite;
-  }
-
-  @keyframes rulesShimmer {
-    0% { background-position: -200% center; }
-    100% { background-position: 200% center; }
-  }
-
-  .rules-head {
-    padding: 16px 18px 12px;
-    background: linear-gradient(180deg, rgba(201,162,39,0.06) 0%, rgba(255,255,255,0.00) 100%);
-  }
-
-  .rules-title {
-    font-family: var(--font-display, serif);
-    font-size: clamp(24px, 4vw, 30px);
-    font-weight: 700;
-    line-height: 1.1;
-    color: #0f1a14;
-  }
-
-  .rules-sub {
-    margin-top: 6px;
-    font-family: var(--font-body, sans-serif);
-    font-size: 13px;
-    line-height: 1.65;
-    color: rgba(15, 26, 20, 0.82);
-  }
-
-  .rules-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-height: 440px;
-    overflow: auto;
-    padding: 4px 16px 8px;
-  }
-
-  .rules-item {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    border-radius: 14px;
-    padding: 12px;
-    background: #fcfbf7;
-    border: 1px solid rgba(31, 61, 46, 0.08);
-  }
-
-  .rules-dot {
-    width: 8px;
-    height: 8px;
-    margin-top: 7px;
-    border-radius: 999px;
-    flex: 0 0 auto;
-    background: linear-gradient(135deg, ${BRASS_L}, ${BRASS});
-    box-shadow: 0 0 0 4px rgba(201,162,39,0.10);
-  }
-
-  .rules-text {
-    font-family: var(--font-body, sans-serif);
-    font-size: 13px;
-    line-height: 1.65;
-    color: rgba(15, 26, 20, 0.88);
-  }
-
-  .rules-foot {
-    padding: 0 16px 16px;
-  }
-
-  .rules-note {
-    border-radius: 14px;
-    padding: 12px 14px;
-    background: rgba(201,162,39,0.08);
-    border: 1px solid rgba(201,162,39,0.18);
-  }
-
-  .rules-note-kicker {
-    font-family: var(--font-plex-mono, monospace);
-    font-size: 9px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: ${BRASS};
-  }
-
-  .rules-note-text {
-    margin-top: 6px;
-    font-family: var(--font-body, sans-serif);
-    font-size: 13px;
-    line-height: 1.65;
-    color: rgba(15, 26, 20, 0.82);
-  }
-
-  .rules-accept {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    border-radius: 16px;
-    padding: 14px;
-    background: #ffffff;
-    border: 1px solid rgba(31, 61, 46, 0.10);
-    box-shadow: 0 8px 22px rgba(16, 24, 22, 0.05);
-  }
-
-  .rules-checkbox {
-    width: 16px;
-    height: 16px;
-    margin-top: 2px;
-    accent-color: ${BRASS};
-    flex: 0 0 auto;
-  }
-
-  .rules-accept-text {
-    font-family: var(--font-body, sans-serif);
-    font-size: 13px;
-    line-height: 1.6;
-    color: rgba(15, 26, 20, 0.84);
-  }
-
-  .rules-btn {
-    width: 100%;
-    min-height: 52px;
-    border-radius: 100px;
-    border: none;
-    background: linear-gradient(135deg, ${BRASS_L}, ${BRASS});
-    color: #102016;
-    font-family: var(--font-plex-mono, monospace);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
-    box-shadow: 0 8px 24px rgba(201,162,39,0.28);
-  }
-
-  .rules-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 32px rgba(201,162,39,0.36);
-  }
-
-  .rules-btn:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-  }
-`}</style>
+        <style>{`
+          .rules-shell { display:flex; flex-direction:column; gap:18px; }
+          .rules-card {
+            border-radius:24px; overflow:hidden;
+            background:#ffffff;
+            border:1px solid rgba(31,61,46,0.10);
+            box-shadow:0 12px 30px rgba(16,24,22,0.08),0 2px 8px rgba(16,24,22,0.05);
+          }
+          .rules-card::before {
+            content:""; display:block; height:2px;
+            background:linear-gradient(90deg,transparent,${BRASS},${BRASS_L},${BRASS},transparent);
+            background-size:200% auto;
+            animation:rulesShimmer 4s linear infinite;
+          }
+          @keyframes rulesShimmer { 0%{background-position:-200% center}100%{background-position:200% center} }
+          .rules-head {
+            padding:16px 18px 12px;
+            background:linear-gradient(180deg,rgba(201,162,39,0.06) 0%,rgba(255,255,255,0.00) 100%);
+          }
+          .rules-title { font-family:var(--font-display,serif); font-size:clamp(24px,4vw,30px); font-weight:700; line-height:1.1; color:#0f1a14; }
+          .rules-sub { margin-top:6px; font-family:var(--font-body,sans-serif); font-size:13px; line-height:1.65; color:rgba(15,26,20,0.82); }
+          .rules-list {
+            display:flex; flex-direction:column; gap:10px;
+            max-height:440px; overflow:auto;
+            padding:4px 16px 8px;
+          }
+          .rules-item { display:flex; gap:10px; align-items:flex-start; border-radius:14px; padding:12px; background:#fcfbf7; border:1px solid rgba(31,61,46,0.08); }
+          .rules-dot { width:8px; height:8px; margin-top:7px; border-radius:999px; flex:0 0 auto; background:linear-gradient(135deg,${BRASS_L},${BRASS}); box-shadow:0 0 0 4px rgba(201,162,39,0.10); }
+          .rules-text { font-family:var(--font-body,sans-serif); font-size:13px; line-height:1.65; color:rgba(15,26,20,0.88); }
+          .rules-foot { padding:0 16px 16px; }
+          .rules-note { border-radius:14px; padding:12px 14px; background:rgba(201,162,39,0.08); border:1px solid rgba(201,162,39,0.18); }
+          .rules-note-kicker { font-family:var(--font-plex-mono,monospace); font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:${BRASS}; }
+          .rules-note-text { margin-top:6px; font-family:var(--font-body,sans-serif); font-size:13px; line-height:1.65; color:rgba(15,26,20,0.82); }
+          .rules-accept { display:flex; gap:10px; align-items:flex-start; border-radius:16px; padding:14px; background:#ffffff; border:1px solid rgba(31,61,46,0.10); box-shadow:0 8px 22px rgba(16,24,22,0.05); }
+          .rules-checkbox { width:16px; height:16px; margin-top:2px; accent-color:${BRASS}; flex:0 0 auto; }
+          .rules-accept-text { font-family:var(--font-body,sans-serif); font-size:13px; line-height:1.6; color:rgba(15,26,20,0.84); }
+          .rules-btn {
+            width:100%; min-height:52px; border-radius:100px; border:none;
+            background:linear-gradient(135deg,${BRASS_L},${BRASS});
+            color:#102016; font-family:var(--font-plex-mono,monospace);
+            font-size:11px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase;
+            cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+            transition:transform 0.2s,box-shadow 0.2s,opacity 0.2s;
+            box-shadow:0 8px 24px rgba(201,162,39,0.28);
+          }
+          .rules-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 14px 32px rgba(201,162,39,0.36); }
+          .rules-btn:disabled { opacity:0.55; cursor:not-allowed; }
+        `}</style>
 
         <div className="rules-shell">
           <div className="rules-card">
             <div className="rules-head">
-              <p
-                className="font-mono text-[10px] uppercase tracking-[0.18em]"
-                style={{ color: BRASS }}
-              >
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: BRASS }}>
                 Before Registration
               </p>
               <h3 className="rules-title">Rules &amp; Regulations</h3>
               <p className="rules-sub">
-                Please read the tournament rules carefully before proceeding to the registration form.
+                Please read the tournament rules carefully before proceeding.
               </p>
             </div>
 
             <div className="rules-list">
-              {RULES.map((rule, index) => (
-                <div key={index} className="rules-item">
+              {RULES.map((rule, i) => (
+                <div key={i} className="rules-item">
                   <span className="rules-dot" />
                   <p className="rules-text">{rule}</p>
                 </div>
@@ -767,8 +588,7 @@ export default function RegisterForm() {
             onClick={() => setShowForm(true)}
             className="rules-btn"
           >
-            Continue to Registration
-            <ArrowRight size={14} />
+            Continue to Registration <ArrowRight size={14} />
           </button>
         </div>
       </>
@@ -795,7 +615,6 @@ export default function RegisterForm() {
         .rf-input::placeholder { color:rgba(22,36,28,0.38); }
         .rf-input:focus { border-color:rgba(201,162,39,0.70); background:#fffdf8; box-shadow:0 0 0 3px rgba(201,162,39,0.12); }
         .rf-input option { background:#fff; color:#16241C; }
-
         .rf-textarea {
           width:100%; border-radius:12px;
           border:1px solid rgba(31,61,46,0.14);
@@ -808,36 +627,18 @@ export default function RegisterForm() {
         }
         .rf-textarea::placeholder { color:rgba(22,36,28,0.38); }
         .rf-textarea:focus { border-color:rgba(201,162,39,0.70); background:#fffdf8; box-shadow:0 0 0 3px rgba(201,162,39,0.12); }
-
-        .rf-label {
-          display:flex; align-items:center; gap:5px; margin-bottom:6px;
-          font-family:var(--font-plex-sans,sans-serif);
-          font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
-          color:#F8F3E7;
-        }
+        .rf-label { display:flex; align-items:center; gap:5px; margin-bottom:6px; font-family:var(--font-plex-sans,sans-serif); font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#F8F3E7; }
         .rf-label .req  { color:${BRASS}; }
         .rf-label .note { color:rgba(248,243,231,0.50); font-weight:600; font-size:9.5px; text-transform:none; letter-spacing:0.02em; }
-
         .rf-field { position:relative; }
         .rf-icon  { position:absolute; left:12px; top:50%; transform:translateY(-50%); pointer-events:none; color:rgba(22,36,28,0.38); transition:color 0.18s; }
         .rf-field:focus-within .rf-icon { color:rgba(201,162,39,0.85); }
         .rf-icon-top { position:absolute; left:12px; top:14px; pointer-events:none; color:rgba(22,36,28,0.38); transition:color 0.18s; }
         .rf-field:focus-within .rf-icon-top { color:rgba(201,162,39,0.85); }
-
         .rf-select-wrap { position:relative; }
         .rf-select-arrow { position:absolute; right:12px; top:50%; transform:translateY(-50%); pointer-events:none; color:rgba(22,36,28,0.38); }
-
         .rf-divider { height:1px; background:linear-gradient(90deg,rgba(244,238,223,0.14),transparent); margin:2px 0; }
-
-        .rf-section-head {
-          font-family:var(--font-plex-mono,monospace);
-          font-size:9px; font-weight:600; letter-spacing:0.20em; text-transform:uppercase;
-          color:rgba(201,162,39,0.65);
-          padding-bottom:8px;
-          border-bottom:0.5px solid rgba(244,238,223,0.09);
-          margin-bottom:2px;
-        }
-
+        .rf-section-head { font-family:var(--font-plex-mono,monospace); font-size:9px; font-weight:600; letter-spacing:0.20em; text-transform:uppercase; color:rgba(201,162,39,0.65); padding-bottom:8px; border-bottom:0.5px solid rgba(244,238,223,0.09); margin-bottom:2px; }
         .rf-submit {
           width:100%; min-height:52px; border-radius:100px; border:none;
           background:linear-gradient(135deg,${BRASS_L},${BRASS});
@@ -852,13 +653,10 @@ export default function RegisterForm() {
         .rf-submit:hover:not(:disabled)::before { transform:translateX(120%) skewX(-12deg); }
         .rf-submit:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 12px 32px rgba(201,162,39,0.36); }
         .rf-submit:disabled { opacity:0.6; cursor:not-allowed; }
-
         .rf-grid-2 { display:grid; gap:10px; grid-template-columns:1fr; }
         .rf-grid-3 { display:grid; gap:10px; grid-template-columns:1fr; }
         .rf-counter { margin-top:5px; text-align:right; font-family:var(--font-plex-mono,monospace); font-size:9px; letter-spacing:0.10em; text-transform:uppercase; color:rgba(244,238,223,0.35); }
-
         input[type="date"]::-webkit-calendar-picker-indicator { opacity:0.65; cursor:pointer; }
-
         @media (min-width:480px) {
           .rf-grid-2 { grid-template-columns:1fr 1fr; gap:12px; }
         }
@@ -870,10 +668,7 @@ export default function RegisterForm() {
         }
       `}</style>
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-3 sm:gap-4"
-      >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:gap-4">
         {/* Honeypot */}
         <input
           type="text"
@@ -884,291 +679,158 @@ export default function RegisterForm() {
           aria-hidden="true"
         />
 
-        {/* Header */}
+        {/* Form header */}
         <div className="mb-0.5">
-          <p
-            className="font-display text-base font-semibold sm:text-lg"
-            style={{ color: "#F4EEDF" }}
-          >
+          <p className="font-display text-base font-semibold sm:text-lg" style={{ color: "#F4EEDF" }}>
             Register Now
           </p>
-          <p
-            className="mt-0.5 font-body text-[13px] font-medium"
-            style={{ color: "rgba(248,243,231,0.78)" }}
-          >
+          <p className="mt-0.5 font-body text-[13px] font-medium" style={{ color: "rgba(248,243,231,0.78)" }}>
             All India Youth Chess Talent Hunt
           </p>
-          <p
-            className="mt-1 font-mono text-[9px] uppercase tracking-[0.14em]"
-            style={{ color: "rgba(244,238,223,0.36)" }}
-          >
+          <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.14em]" style={{ color: "rgba(244,238,223,0.36)" }}>
             All eight categories · U6 — U20
           </p>
         </div>
 
         <div className="rf-divider" />
 
-        {/* ── Player Details ── */}
+        {/* Player Details */}
         <p className="rf-section-head">Player Details</p>
 
         <div className="rf-grid-2">
           <div>
-            <label htmlFor="playerName" className="rf-label">
-              Name <span className="req">*</span>
-            </label>
+            <label htmlFor="playerName" className="rf-label">Name <span className="req">*</span></label>
             <div className="rf-field">
               <User size={14} className="rf-icon" />
-              <input
-                id="playerName"
-                name="playerName"
-                required
-                placeholder="Full name"
-                className="rf-input"
-              />
+              <input id="playerName" name="playerName" required placeholder="Full name" className="rf-input" />
             </div>
           </div>
           <div>
-            <label htmlFor="dob" className="rf-label">
-              Date of birth <span className="req">*</span>
-            </label>
+            <label htmlFor="dob" className="rf-label">Date of birth <span className="req">*</span></label>
             <div className="rf-field">
               <Calendar size={14} className="rf-icon" />
-              <input
-                id="dob"
-                name="dob"
-                type="date"
-                required
-                className="rf-input"
-              />
+              <input id="dob" name="dob" type="date" required className="rf-input" />
             </div>
           </div>
         </div>
 
         <div className="rf-grid-2">
           <div>
-            <label htmlFor="gender" className="rf-label">
-              Gender <span className="req">*</span>
-            </label>
+            <label htmlFor="gender" className="rf-label">Gender <span className="req">*</span></label>
             <div className="rf-field rf-select-wrap">
               <Users size={14} className="rf-icon" />
-              <select
-                id="gender"
-                name="gender"
-                required
-                defaultValue=""
-                className="rf-input"
-                style={{ paddingRight: "36px", cursor: "pointer" }}
-              >
-                <option value="" disabled>
-                  Select gender
-                </option>
-                {GENDERS.map((g) => (
-                  <option key={g} value={g}>
-                    {g}
-                  </option>
-                ))}
+              <select id="gender" name="gender" required defaultValue="" className="rf-input" style={{ paddingRight: "36px", cursor: "pointer" }}>
+                <option value="" disabled>Select gender</option>
+                {GENDERS.map((g) => <option key={g} value={g}>{g}</option>)}
               </select>
               <ChevronDown size={13} className="rf-select-arrow" />
             </div>
           </div>
           <div>
-            <label htmlFor="schoolName" className="rf-label">
-              School <span className="req">*</span>
-            </label>
+            <label htmlFor="schoolName" className="rf-label">School <span className="req">*</span></label>
             <div className="rf-field">
               <School size={14} className="rf-icon" />
-              <input
-                id="schoolName"
-                name="schoolName"
-                required
-                placeholder="School name"
-                className="rf-input"
-              />
+              <input id="schoolName" name="schoolName" required placeholder="School name" className="rf-input" />
             </div>
           </div>
         </div>
 
         <div className="rf-grid-2">
           <div>
-            <label htmlFor="category" className="rf-label">
-              Category <span className="req">*</span>
-            </label>
+            <label htmlFor="category" className="rf-label">Category <span className="req">*</span></label>
             <div className="rf-field rf-select-wrap">
               <BookOpen size={14} className="rf-icon" />
-              <select
-                id="category"
-                name="category"
-                required
-                defaultValue=""
-                className="rf-input"
-                style={{ paddingRight: "36px", cursor: "pointer" }}
-              >
-                <option value="" disabled>
-                  Select category
-                </option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
+              <select id="category" name="category" required defaultValue="" className="rf-input" style={{ paddingRight: "36px", cursor: "pointer" }}>
+                <option value="" disabled>Select category</option>
+                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
               <ChevronDown size={13} className="rf-select-arrow" />
             </div>
           </div>
           <div>
-            <label htmlFor="fideRating" className="rf-label">
-              FIDE rating <span className="note">(optional)</span>
-            </label>
+            <label htmlFor="fideRating" className="rf-label">FIDE rating <span className="note">(optional)</span></label>
             <div className="rf-field">
               <Star size={14} className="rf-icon" />
-              <input
-                id="fideRating"
-                name="fideRating"
-                type="number"
-                min="0"
-                placeholder="Rating"
-                className="rf-input"
-              />
+              <input id="fideRating" name="fideRating" type="number" min="0" placeholder="Rating" className="rf-input" />
             </div>
           </div>
         </div>
 
         <div>
-          <label htmlFor="fideId" className="rf-label">
-            FIDE ID <span className="note">(optional)</span>
-          </label>
+          <label htmlFor="fideId" className="rf-label">FIDE ID <span className="note">(optional)</span></label>
           <div className="rf-field">
             <Hash size={14} className="rf-icon" />
-            <input
-              id="fideId"
-              name="fideId"
-              placeholder="Enter FIDE ID"
-              className="rf-input"
-            />
+            <input id="fideId" name="fideId" placeholder="Enter FIDE ID" className="rf-input" />
           </div>
         </div>
 
         <div className="rf-divider" />
 
-        {/* ── Parent / Guardian ── */}
+        {/* Parent / Guardian */}
         <p className="rf-section-head">Parent / Guardian</p>
 
         <div className="rf-grid-2">
           <div>
-            <label htmlFor="parentName" className="rf-label">
-              Name <span className="req">*</span>
-            </label>
+            <label htmlFor="parentName" className="rf-label">Name <span className="req">*</span></label>
             <div className="rf-field">
               <User size={14} className="rf-icon" />
-              <input
-                id="parentName"
-                name="parentName"
-                required
-                placeholder="Guardian name"
-                className="rf-input"
-              />
+              <input id="parentName" name="parentName" required placeholder="Guardian name" className="rf-input" />
             </div>
           </div>
           <div>
-            <label htmlFor="phone" className="rf-label">
-              Mobile <span className="req">*</span>
-            </label>
+            <label htmlFor="phone" className="rf-label">Mobile <span className="req">*</span></label>
             <div className="rf-field">
               <Phone size={14} className="rf-icon" />
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                required
-                placeholder="+91 00000 00000"
-                className="rf-input"
-              />
+              <input id="phone" name="phone" type="tel" required placeholder="+91 00000 00000" className="rf-input" />
             </div>
           </div>
         </div>
 
         <div>
-          <label htmlFor="email" className="rf-label">
-            Email <span className="req">*</span>
-          </label>
+          <label htmlFor="email" className="rf-label">Email <span className="req">*</span></label>
           <div className="rf-field">
             <Mail size={14} className="rf-icon" />
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              placeholder="your@email.com"
-              className="rf-input"
-            />
+            <input id="email" name="email" type="email" required placeholder="your@email.com" className="rf-input" />
           </div>
         </div>
 
         <div className="rf-divider" />
 
-        {/* ── Location ── */}
+        {/* Location */}
         <p className="rf-section-head">Location</p>
 
         <div className="rf-grid-3">
           <div>
-            <label htmlFor="city" className="rf-label">
-              City <span className="req">*</span>
-            </label>
+            <label htmlFor="city" className="rf-label">City <span className="req">*</span></label>
             <div className="rf-field">
               <MapPin size={14} className="rf-icon" />
-              <input
-                id="city"
-                name="city"
-                required
-                placeholder="City"
-                className="rf-input"
-              />
+              <input id="city" name="city" required placeholder="City" className="rf-input" />
             </div>
           </div>
           <div>
-            <label htmlFor="state" className="rf-label">
-              State <span className="req">*</span>
-            </label>
+            <label htmlFor="state" className="rf-label">State <span className="req">*</span></label>
             <div className="rf-field">
               <Map size={14} className="rf-icon" />
-              <input
-                id="state"
-                name="state"
-                required
-                placeholder="State"
-                className="rf-input"
-              />
+              <input id="state" name="state" required placeholder="State" className="rf-input" />
             </div>
           </div>
           <div>
-            <label htmlFor="pincode" className="rf-label">
-              Pincode <span className="req">*</span>
-            </label>
+            <label htmlFor="pincode" className="rf-label">Pincode <span className="req">*</span></label>
             <div className="rf-field">
               <LocateFixed size={14} className="rf-icon" />
-              <input
-                id="pincode"
-                name="pincode"
-                required
-                inputMode="numeric"
-                pattern="[0-9]{6}"
-                maxLength={6}
-                placeholder="Pincode"
-                className="rf-input"
-              />
+              <input id="pincode" name="pincode" required inputMode="numeric" pattern="[0-9]{6}" maxLength={6} placeholder="Pincode" className="rf-input" />
             </div>
           </div>
         </div>
 
         <div className="rf-divider" />
 
-        {/* ── Achievements ── */}
+        {/* Achievements */}
         <p className="rf-section-head">Achievements</p>
 
         <div>
           <label htmlFor="previousMedals" className="rf-label">
-            Previous medals{" "}
-            <span className="note">(optional · max 50 words)</span>
+            Previous medals <span className="note">(optional · max 50 words)</span>
           </label>
           <div className="rf-field">
             <Trophy size={14} className="rf-icon-top" />
@@ -1179,10 +841,7 @@ export default function RegisterForm() {
               maxLength={350}
               value={medalText}
               onChange={(e) => {
-                const words = e.target.value
-                  .trim()
-                  .split(/\s+/)
-                  .filter(Boolean);
+                const words = e.target.value.trim().split(/\s+/).filter(Boolean);
                 if (words.length <= 50) setMedalText(e.target.value);
               }}
               placeholder="Tournament wins, medals, or notable achievements…"
@@ -1190,45 +849,25 @@ export default function RegisterForm() {
             />
           </div>
           <p className="rf-counter">
-            {medalText.trim()
-              ? medalText
-                  .trim()
-                  .split(/\s+/)
-                  .filter(Boolean).length
-              : 0}
-            /50 words
+            {medalText.trim() ? medalText.trim().split(/\s+/).filter(Boolean).length : 0}/50 words
           </p>
         </div>
 
-        {/* Error */}
         {error && (
           <div
             className="flex items-start gap-3 rounded-xl px-4 py-3 text-sm"
-            style={{
-              background: "rgba(239,68,68,0.10)",
-              border: "1px solid rgba(239,68,68,0.25)",
-              color: "#fecaca",
-            }}
+            style={{ background: "rgba(239,68,68,0.10)", border: "1px solid rgba(239,68,68,0.25)", color: "#fecaca" }}
           >
             <AlertCircle size={15} className="mt-0.5 shrink-0" />
             {error}
           </div>
         )}
 
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={status === "submitting"}
-          className="rf-submit mt-1"
-        >
+        <button type="submit" disabled={status === "submitting"} className="rf-submit mt-1">
           {status === "submitting" ? (
-            <>
-              <Loader2 size={16} className="animate-spin" /> Saving…
-            </>
+            <><Loader2 size={16} className="animate-spin" /> Saving…</>
           ) : (
-            <>
-              Proceed to Payment <ArrowRight size={14} />
-            </>
+            <>Proceed to Payment <ArrowRight size={14} /></>
           )}
         </button>
 
